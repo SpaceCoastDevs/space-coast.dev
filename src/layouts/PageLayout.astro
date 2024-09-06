@@ -1,8 +1,11 @@
 ---
 import Announcement from '~/components/widgets/Announcement.astro';
+import Header from '~/components/widgets/Header.astro';
 import Layout from '~/layouts/Layout.astro';
 
 import type { MetaData } from '~/types';
+
+import { headerData } from '~/navigation';
 
 export interface Props {
   metadata?: MetaData;
@@ -15,9 +18,9 @@ const { metadata } = Astro.props;
   <slot name="announcement">
     <Announcement />
   </slot>
-  <!-- <slot name="header">
+  <slot name="header">
     <Header {...headerData} isSticky showRssFeed showToggleTheme />
-  </slot> -->
+  </slot>
   <main>
     <slot />
   </main>
