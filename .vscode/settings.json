@@ -1,15 +1,53 @@
 {
-  "css.customData": ["./vscode.tailwind.json"],
-  "eslint.validate": ["javascript", "javascriptreact", "astro", "typescript", "typescriptreact"],
+  "css.customData": [
+    "./vscode.tailwind.json"
+  ],
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "astro",
+    "typescript",
+    "typescriptreact"
+  ],
   "files.associations": {
     "*.mdx": "markdown"
   },
-  "prettier.documentSelectors": ["**/*.astro"],
+  "prettier.documentSelectors": [
+    "**/*.astro"
+  ],
   "[astro]": {
     "editor.defaultFormatter": "astro-build.astro-vscode"
   },
   "yaml.schemas": {
     "./.vscode/astrowind/config-schema.json": "/src/config.yaml"
   },
-  "eslint.useFlatConfig": true
+  "eslint.useFlatConfig": true,
+  "workbench.colorCustomizations": {
+    "activityBar.activeBackground": "#ffffff",
+    "activityBar.background": "#ffffff",
+    "activityBar.foreground": "#15202b",
+    "activityBar.inactiveForeground": "#15202b99",
+    "activityBarBadge.background": "#df9f9f",
+    "activityBarBadge.foreground": "#15202b",
+    "commandCenter.border": "#15202b99",
+    "editorGroup.border": "#ffffff",
+    "panel.border": "#ffffff",
+    "sash.hoverBorder": "#ffffff",
+    "sideBar.border": "#ffffff",
+    "statusBar.background": "#fefff4",
+    "statusBar.border": "#fefff4",
+    "statusBar.debuggingBackground": "#f5f4ff",
+    "statusBar.debuggingBorder": "#f5f4ff",
+    "statusBar.debuggingForeground": "#15202b",
+    "statusBar.foreground": "#15202b",
+    "statusBarItem.hoverBackground": "#f9ffc1",
+    "statusBarItem.remoteBackground": "#fefff4",
+    "statusBarItem.remoteForeground": "#15202b",
+    "titleBar.activeBackground": "#fefff4",
+    "titleBar.activeForeground": "#15202b",
+    "titleBar.border": "#fefff4",
+    "titleBar.inactiveBackground": "#fefff499",
+    "titleBar.inactiveForeground": "#15202b99"
+  },
+  "peacock.remoteColor": "#FEFFF4"
 }
