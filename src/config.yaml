@@ -22,10 +22,10 @@ metadata:
         width: 1200
         height: 675
     type: website
-  # twitter:
-  #   handle: '@onwidget'
-  #   site: '@onwidget'
-  #   cardType: summary_large_image
+  twitter:
+    handle: '@SpaceCoast_Devs'
+    site: '@SpaceCoast_Devs'
+    cardType: summary_large_image
 
 i18n:
   language: en
