@@ -1,8 +1,7 @@
 ---
-import Layout from '~/layouts/PageLayout.astro';
-
 import Hero from '~/components/widgets/Hero.astro';
 import Note from '~/components/widgets/Note.astro';
+import Layout from '~/layouts/PageLayout.astro';
 
 const metadata = {
   title: 'Space Coast Devs - Home',
@@ -14,7 +13,12 @@ const metadata = {
   <!-- Hero Widget ******************* -->
 
   <Hero
-    image={{ src: '~/assets/images/space-coast-devs-meetup-header-v2.png', alt: 'Space Coast Devs Hero Image' }}
+    image={{
+      src: '~/assets/images/space-coast-devs-icon.svg',
+      alt: 'Space Coast Devs Hero Image',
+      width: 256,
+      height: 256,
+    }}
     actions={[
       {
         variant: 'primary',
@@ -39,12 +43,6 @@ const metadata = {
         levels and backgrounds. If you are in the Space Coast area, we would love to have you join us!
       </p>
     </Fragment>
-    <!-- Note Widget ******************* -->
-
-    <Note />
   </Hero>
+  <Note />
 </Layout>
-
-<!-- Note Widget ******************* -->
-
-<Note />

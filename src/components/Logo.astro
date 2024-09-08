@@ -1,11 +1,13 @@
 ---
 import { SITE } from 'astrowind:config';
 import LogoImage from '~/assets/images/space-coast-devs-icon.svg';
+
+const { size } = Astro.props;
 ---
 
 <span
   class="self-center ml-2 rtl:ml-0 rtl:mr-2 text-2xl md:text-xl font-bold text-gray-900 whitespace-nowrap dark:text-white"
 >
-  <img src={LogoImage.src} width="32" height="32" class="inline" />
+  <img src={LogoImage.src} width={size} height={size} class="inline" />
   {SITE?.name}
 </span>
