@@ -15,5 +15,3 @@ https://space-coast.dev/meetups
 ## Discord
 
 https://space-coast.dev/discord
-
-
