@@ -31,6 +31,7 @@ export const footerData = {
   links: [],
   secondaryLinks: [],
   socialLinks: [
+    { ariaLabel: 'Bluesky', icon: 'tabler:brand-bluesky', href: 'https://bsky.app/profile/space-coast.dev' },
     { ariaLabel: 'X', icon: 'tabler:brand-x', href: 'https://x.com/SpaceCoast_Devs' },
     { ariaLabel: 'Instagram', icon: 'tabler:brand-instagram', href: 'https://www.instagram.com/spacecoastdev/' },
     { ariaLabel: 'Facebook', icon: 'tabler:brand-facebook', href: 'https://www.facebook.com/spacecoastdevs' },
