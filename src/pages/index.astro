@@ -2,6 +2,7 @@
 import Hero from '~/components/widgets/Hero.astro';
 import Note from '~/components/widgets/Note.astro';
 import Layout from '~/layouts/PageLayout.astro';
+import CallToAction from '~/components/widgets/CallToAction.astro';
 
 const metadata = {
   title: 'Space Coast Devs - Home',
@@ -51,5 +52,20 @@ const metadata = {
       </p>
     </Fragment>
   </Hero>
+
+  <CallToAction
+    actions={[
+      {
+        variant: 'primary',
+        text: 'Find out more!',
+        href: '/posts/devfest-central-florida-gemjam-2025',
+        icon: 'tabler:direction-sign',
+      },
+    ]}
+  >
+    <Fragment slot="title"><a href="https://devfestflorida.com/">DevFest Central Florida GemJam 2025</a></Fragment>
+    <Fragment slot="subtitle">Are you ready to revolutionize the world with AI?</Fragment>
+  </CallToAction>
+
   <Note />
 </Layout>
