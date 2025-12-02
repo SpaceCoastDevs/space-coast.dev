@@ -32,5 +32,6 @@
     "titleBar.inactiveForeground": "#15202b99",
     "sideBar.border": "#ffffff"
   },
-  "peacock.remoteColor": "#FEFFF4"
+  "peacock.remoteColor": "#FEFFF4",
+  "cSpell.words": ["Makerspace", "tabler"]
 }
