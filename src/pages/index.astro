@@ -2,9 +2,6 @@
 import Hero from '~/components/widgets/Hero.astro';
 import Note from '~/components/widgets/Note.astro';
 import Layout from '~/layouts/PageLayout.astro';
-import CallToAction from '~/components/widgets/CallToAction.astro';
-import { Image } from 'astro:assets';
-import DevFest from '~/assets/images/devfest-hackathon-2025-date.png';
 
 const metadata = {
   title: 'Space Coast Devs - Home',
@@ -13,30 +10,6 @@ const metadata = {
 ---
 
 <Layout metadata={metadata}>
-  <CallToAction
-    actions={[
-      {
-        variant: 'primary',
-        text: 'Find out more!',
-        href: '/posts/devfest-central-florida-gemjam-2025',
-        icon: 'tabler:direction-sign',
-      },
-    ]}
-  >
-    <Fragment slot="title"
-      ><a href="https://devfestflorida.com/">
-        <Image
-          src={DevFest}
-          alt="DevFest Central Florida GemJam 2025"
-          width={800}
-          height={200}
-          class="mx-auto mb-4 mt-4"
-        /></a
-      ></Fragment
-    >
-    <Fragment slot="subtitle">Are you ready to revolutionize the world with AI? </Fragment>
-  </CallToAction>
-
   <!-- Hero Widget ******************* -->
 
   <Hero
