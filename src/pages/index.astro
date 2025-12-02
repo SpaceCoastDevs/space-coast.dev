@@ -1,65 +1,38 @@
 ---
-import Hero from '~/components/widgets/Hero.astro';
-import Note from '~/components/widgets/Note.astro';
-import Layout from '~/layouts/PageLayout.astro';
-import CallToAction from '~/components/widgets/CallToAction.astro';
-import { Image } from 'astro:assets';
-import DevFest from '~/assets/images/devfest-hackathon-2025-date.png';
+import Hero from "~/components/widgets/Hero.astro";
+import Note from "~/components/widgets/Note.astro";
+import Layout from "~/layouts/PageLayout.astro";
 
 const metadata = {
-  title: 'Space Coast Devs - Home',
+  title: "Space Coast Devs - Home",
   ignoreTitleTemplate: true,
 };
 ---
 
 <Layout metadata={metadata}>
-  <CallToAction
-    actions={[
-      {
-        variant: 'primary',
-        text: 'Find out more!',
-        href: '/posts/devfest-central-florida-gemjam-2025',
-        icon: 'tabler:direction-sign',
-      },
-    ]}
-  >
-    <Fragment slot="title"
-      ><a href="https://devfestflorida.com/">
-        <Image
-          src={DevFest}
-          alt="DevFest Central Florida GemJam 2025"
-          width={800}
-          height={200}
-          class="mx-auto mb-4 mt-4"
-        /></a
-      ></Fragment
-    >
-    <Fragment slot="subtitle">Are you ready to revolutionize the world with AI? </Fragment>
-  </CallToAction>
-
   <!-- Hero Widget ******************* -->
 
   <Hero
     image={{
-      src: '~/assets/images/space-coast-devs-icon.svg',
-      alt: 'Space Coast Devs Hero Image',
+      src: "~/assets/images/space-coast-devs-icon.svg",
+      alt: "Space Coast Devs Hero Image",
       width: 256,
       height: 256,
     }}
     actions={[
       {
-        variant: 'primary',
-        text: 'Join our Discord',
-        href: 'https://space-coast.dev/discord',
-        target: '_blank',
-        icon: 'tabler:brand-discord',
+        variant: "primary",
+        text: "Join our Discord",
+        href: "https://space-coast.dev/discord",
+        target: "_blank",
+        icon: "tabler:brand-discord",
       },
       {
-        variant: 'primary',
-        text: 'Join our Meetup',
-        href: 'https://www.meetup.com/space-coast-devs/',
-        target: '_blank',
-        icon: 'tabler:brand-meetup',
+        variant: "primary",
+        text: "Join our Meetup",
+        href: "https://www.meetup.com/space-coast-devs/",
+        target: "_blank",
+        icon: "tabler:brand-meetup",
       },
     ]}
   >
@@ -67,14 +40,16 @@ const metadata = {
 
     <Fragment slot="subtitle">
       <p class="mb-3">
-        Space Coast Devs (formerly Space Coast Tech Club) is a place for developers, designers, scientists, IT
-        professionals, and technologists to learn and share knowledge about technology. We host meetups and other events
-        to facilitate community members to connect with one another.
+        Space Coast Devs (formerly Space Coast Tech Club) is a place for
+        developers, designers, scientists, IT professionals, and technologists
+        to learn and share knowledge about technology. We host meetups and other
+        events to facilitate community members to connect with one another.
       </p>
 
       <p class="mb-3">
-        We also have a Discord server where the community can chat and ask questions. We welcome people of all skill
-        levels and backgrounds. If you are in the Space Coast area, we would love to have you join us!
+        We also have a Discord server where the community can chat and ask
+        questions. We welcome people of all skill levels and backgrounds. If you
+        are in the Space Coast area, we would love to have you join us!
       </p>
     </Fragment>
   </Hero>
