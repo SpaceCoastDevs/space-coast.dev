@@ -45,6 +45,9 @@ export const GET: APIRoute = async ({ request, url }) => {
     const docRef = db.collection('members').doc(discordUser.id);
     const doc = await docRef.get();
 
+    // Read emailVerified before upserting (new members default to false)
+    const emailVerified: boolean = doc.exists ? (doc.data()?.emailVerified ?? false) : false;
+
     if (!doc.exists) {
       await docRef.set({
         discordId: discordUser.id,
@@ -60,6 +63,8 @@ export const GET: APIRoute = async ({ request, url }) => {
         skills: [],
         lookingFor: [],
         isPublic: true,
+        emailVerified: false,
+        email: '',
         joinedAt: FieldValue.serverTimestamp(),
         updatedAt: FieldValue.serverTimestamp(),
       });
@@ -71,11 +76,12 @@ export const GET: APIRoute = async ({ request, url }) => {
       });
     }
 
-    const sessionUser = { discordId: discordUser.id, discordUsername: discordUser.username, displayName, avatarUrl };
+    const sessionUser = { discordId: discordUser.id, discordUsername: discordUser.username, displayName, avatarUrl, emailVerified };
     const token = await createSession(sessionUser);
     const cookieHeaders = buildSessionCookies(token, sessionUser);
 
-    const headers = new Headers({ Location: '/profile' });
+    const redirectTo = emailVerified ? '/profile' : '/verify-email';
+    const headers = new Headers({ Location: redirectTo });
     // Clear the state cookie and set session cookies
     headers.append('Set-Cookie', 'oauth_state=; HttpOnly; Path=/; Max-Age=0; SameSite=Lax');
     cookieHeaders.forEach((c) => headers.append('Set-Cookie', c));

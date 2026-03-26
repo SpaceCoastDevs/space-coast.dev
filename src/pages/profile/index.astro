@@ -10,6 +10,9 @@ const user = await getSession(Astro.request);
 if (!user) {
   return Astro.redirect('/api/auth/login');
 }
+if (!user.emailVerified) {
+  return Astro.redirect('/verify-email');
+}
 
 const doc = await db.collection('members').doc(user.discordId).get();
 const profile = doc.data() as MemberProfile;

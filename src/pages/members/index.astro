@@ -14,8 +14,13 @@ const errorMessages: Record<string, string> = {
   auth_failed: "Authentication failed. Please try again.",
 };
 
-const snapshot = await db.collection('members').where('isPublic', '==', true).get();
-const members = snapshot.docs.map((doc) => ({ id: doc.id, ...(doc.data() as MemberProfile) }));
+const snapshot = await db
+  .collection('members')
+  .where('emailVerified', '==', true)
+  .get();
+const members = snapshot.docs
+  .map((doc) => ({ id: doc.id, ...(doc.data() as MemberProfile) }))
+  .filter((m) => m.isPublic);
 
 // Sort by displayName
 members.sort((a, b) => a.displayName.localeCompare(b.displayName));

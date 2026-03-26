@@ -41,6 +41,8 @@ export interface MemberProfile {
   skills: string[];
   lookingFor: string[];
   isPublic: boolean;
+  email: string;
+  emailVerified: boolean;
   joinedAt: FirebaseFirestore.Timestamp;
   updatedAt: FirebaseFirestore.Timestamp;
 }

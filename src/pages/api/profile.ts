@@ -6,7 +6,7 @@ import { db } from '~/lib/firebase';
 import { getSession } from '~/lib/auth';
 
 const ALLOWED_LOOKING_FOR = ['jobs', 'collaborators', 'mentors', 'mentees', 'open-source'];
-const MAX_SKILLS = 20;
+const MAX_SKILLS = 50;
 const MAX_FIELD_LENGTH = 200;
 const MAX_BIO_LENGTH = 1024;
 
@@ -32,6 +32,13 @@ export const POST: APIRoute = async ({ request }) => {
   if (!user) {
     return new Response(JSON.stringify({ error: 'Unauthorized' }), {
       status: 401,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  if (!user.emailVerified) {
+    return new Response(JSON.stringify({ error: 'Email verification required' }), {
+      status: 403,
       headers: { 'Content-Type': 'application/json' },
     });
   }

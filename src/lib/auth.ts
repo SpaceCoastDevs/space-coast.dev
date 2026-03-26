@@ -5,6 +5,7 @@ export interface SessionUser {
   discordUsername: string;
   displayName: string;
   avatarUrl: string;
+  emailVerified: boolean;
 }
 
 const SESSION_COOKIE = 'session';
