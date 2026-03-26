@@ -25,7 +25,7 @@ const allSkills = skillsSnap.docs
   .map((d) => d.data() as Skill)
   .sort((a, b) => a.category.localeCompare(b.category) || a.name.localeCompare(b.name));
 
-const CATEGORY_ORDER = ['Languages', 'Frontend', 'Backend', 'Mobile', 'Database', 'Cloud & DevOps', 'AI / ML', 'Testing', 'Cyber Security', 'Gaming'];
+const CATEGORY_ORDER = ['Languages', 'Frontend', 'Backend', 'CMS & No-Code', 'Mobile', 'Database', 'Cloud & DevOps', 'AI / ML', 'Testing', 'Design & UX', 'Science & Data', 'IT & Sysadmin', 'Cyber Security', 'Amateur Radio', 'Maker & Fabrication', 'Gaming', 'Community & Leadership'];
 const grouped = allSkills.reduce<Record<string, Skill[]>>((acc, s) => {
   (acc[s.category] ??= []).push(s);
   return acc;
