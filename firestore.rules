@@ -1,0 +1,15 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /members/{userId} {
+      allow read: if true;
+      allow write: if false;
+    }
+    match /skills/{skillId} {
+      // Anyone can browse the approved skill list
+      allow read: if true;
+      // All writes (create, approve) go through the Admin SDK
+      allow write: if false;
+    }
+  }
+}

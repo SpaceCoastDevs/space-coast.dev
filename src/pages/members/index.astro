@@ -1,0 +1,103 @@
+---
+export const prerender = false;
+
+import PageLayout from '~/layouts/PageLayout.astro';
+import MemberCard from '~/components/members/MemberCard.astro';
+import { db } from '~/lib/firebase';
+import type { MemberProfile } from '~/lib/firebase';
+
+const error = Astro.url.searchParams.get('error');
+
+const errorMessages: Record<string, string> = {
+  not_member: "You must be a member of the Space Coast Devs Discord server to create a profile. Join us first!",
+  invalid_state: "Something went wrong with the authentication flow. Please try again.",
+  auth_failed: "Authentication failed. Please try again.",
+};
+
+const snapshot = await db.collection('members').where('isPublic', '==', true).get();
+const members = snapshot.docs.map((doc) => ({ id: doc.id, ...(doc.data() as MemberProfile) }));
+
+// Sort by displayName
+members.sort((a, b) => a.displayName.localeCompare(b.displayName));
+---
+
+<PageLayout metadata={{ title: 'Member Directory — Space Coast Devs', description: 'Meet the members of the Space Coast Devs community.' }}>
+  <section class="py-12 md:py-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6">
+      <div class="mb-10 text-center">
+        <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-3">Member Directory</h1>
+        <p class="text-lg text-gray-500 dark:text-gray-400 max-w-xl mx-auto">
+          Meet the developers of the Space Coast Devs community.
+        </p>
+      </div>
+
+      {
+        error && errorMessages[error] && (
+          <div class="mb-8 max-w-2xl mx-auto rounded-lg bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800 px-5 py-4">
+            <p class="text-amber-800 dark:text-amber-200 text-sm">
+              {errorMessages[error]}
+              {error === 'not_member' && (
+                <a href="/discord" class="ml-2 underline font-medium">
+                  Join the Discord
+                </a>
+              )}
+            </p>
+          </div>
+        )
+      }
+
+      <div class="mb-8 max-w-sm mx-auto">
+        <input
+          id="member-search"
+          type="search"
+          placeholder="Search by name or skill…"
+          class="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-900 px-4 py-2.5 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary"
+          autocomplete="off"
+        />
+      </div>
+
+      {
+        members.length === 0 ? (
+          <p class="text-center text-gray-500 dark:text-gray-400 py-16">
+            No members yet. <a href="/api/auth/login" class="text-primary underline">Be the first to join!</a>
+          </p>
+        ) : (
+          <div
+            id="member-grid"
+            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"
+          >
+            {members.map((m) => (
+              <MemberCard
+                discordId={m.discordId}
+                displayName={m.displayName}
+                avatarUrl={m.avatarUrl}
+                location={m.location}
+                bio={m.bio}
+                skills={m.skills}
+                lookingFor={m.lookingFor}
+              />
+            ))}
+          </div>
+        )
+      }
+
+      <p class="text-center text-sm text-gray-400 dark:text-gray-600 mt-12">
+        <a href="/api/auth/login" class="underline hover:text-primary transition-colors">Sign in with Discord</a> to create your profile and appear in the directory.
+      </p>
+    </div>
+  </section>
+</PageLayout>
+
+<script>
+  const search = document.getElementById('member-search') as HTMLInputElement | null;
+  const grid = document.getElementById('member-grid');
+  if (search && grid) {
+    search.addEventListener('input', () => {
+      const q = search.value.toLowerCase().trim();
+      grid.querySelectorAll<HTMLAnchorElement>('a[href^="/members/"]').forEach((card) => {
+        const text = card.textContent?.toLowerCase() ?? '';
+        card.style.display = !q || text.includes(q) ? '' : 'none';
+      });
+    });
+  }
+</script>

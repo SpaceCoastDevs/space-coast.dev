@@ -3,6 +3,7 @@ import Announcement from '~/components/widgets/Announcement.astro';
 import Footer from '~/components/widgets/Footer.astro';
 import Header from '~/components/widgets/Header.astro';
 import Layout from '~/layouts/Layout.astro';
+import AuthButton from '~/components/members/AuthButton.astro';
 
 import type { MetaData } from '~/types';
 
@@ -20,7 +21,9 @@ const { metadata } = Astro.props;
     <Announcement />
   </slot>
   <slot name="header">
-    <Header {...headerData} isSticky showRssFeed showToggleTheme />
+    <Header {...headerData} isSticky showRssFeed showToggleTheme>
+      <AuthButton slot="extra-actions" />
+    </Header>
   </slot>
   <main>
     <slot />

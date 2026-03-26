@@ -157,6 +157,7 @@ const currentPath = `/${trimSlash(new URL(Astro.url).pathname)}`;
             ''
           )
         }
+        <slot name="extra-actions" />
       </div>
     </div>
   </div>
