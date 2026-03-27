@@ -1,8 +1,8 @@
 ---
 import WidgetWrapper from '~/components/ui/WidgetWrapper.astro';
-import MemberCard from '#membership/components/MemberCard.astro';
-import { db } from '#membership/lib/firebase';
-import type { MemberProfile } from '#membership/lib/firebase';
+import MemberCard from './MemberCard.astro';
+import { db } from '../lib/firebase';
+import type { MemberProfile } from '../lib/firebase';
 
 interface Props {
   count?: number;

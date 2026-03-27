@@ -5,6 +5,7 @@ import PageLayout from '~/layouts/PageLayout.astro';
 import { db } from '../../lib/firebase';
 import type { MemberProfile, Skill } from '../../lib/firebase';
 import { getSession, createSession, buildSessionCookies } from '../../lib/auth';
+import '../../styles/membership.css';
 
 const user = await getSession(Astro.request);
 if (!user) {
@@ -310,20 +311,6 @@ const LOOKING_FOR_OPTIONS = [
     </div>
   </section>
 </PageLayout>
-
-<style>
-  .skill-tag {
-    @apply px-3 py-1 text-sm rounded-full border cursor-pointer transition-colors;
-    @apply bg-gray-50 dark:bg-slate-800 border-gray-200 dark:border-gray-700;
-    @apply text-gray-600 dark:text-gray-300;
-    @apply hover:border-blue-400 dark:hover:border-blue-500;
-  }
-  .skill-tag.skill-selected {
-    @apply bg-blue-50 dark:bg-blue-950 border-blue-400 dark:border-blue-500;
-    @apply text-blue-700 dark:text-blue-300 font-medium;
-  }
-</style>
-
 <script>
   const MAX_SKILLS = 50;
   let selected = new Set<string>();
