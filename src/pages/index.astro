@@ -1,6 +1,10 @@
 ---
+export const prerender = false;
+
 import Hero from '~/components/widgets/Hero.astro';
 import Note from '~/components/widgets/Note.astro';
+import LatestMembers from '~/components/widgets/LatestMembers.astro';
+import MemberSpotlight from '~/components/widgets/MemberSpotlight.astro';
 import Layout from '~/layouts/PageLayout.astro';
 
 const metadata = {
@@ -45,12 +49,16 @@ const metadata = {
         to facilitate community members to connect with one another.
       </p>
 
+      <MemberSpotlight />
+
       <p class="mb-3">
         We also have a Discord server where the community can chat and ask questions. We welcome people of all skill
         levels and backgrounds. If you are in the Space Coast area, we would love to have you join us!
       </p>
     </Fragment>
   </Hero>
+
+  <LatestMembers />
 
   <Note />
 </Layout>

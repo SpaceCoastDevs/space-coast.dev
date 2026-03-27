@@ -1,0 +1,446 @@
+---
+export const prerender = false;
+
+import PageLayout from '~/layouts/PageLayout.astro';
+import { db } from '~/lib/firebase';
+import type { MemberProfile, Skill } from '~/lib/firebase';
+import { getSession, createSession, buildSessionCookies } from '~/lib/auth';
+
+const user = await getSession(Astro.request);
+if (!user) {
+  return Astro.redirect('/api/auth/login');
+}
+
+// Read Firestore first — use it as the source of truth for emailVerified
+const doc = await db.collection('members').doc(user.discordId).get();
+const profile = doc.data() as MemberProfile;
+
+if (!profile?.emailVerified) {
+  return Astro.redirect('/verify-email');
+}
+
+// Heal a stale JWT if the cookie pre-dates email verification
+if (!user.emailVerified) {
+  const updatedUser = { ...user, emailVerified: true };
+  const token = await createSession(updatedUser);
+  const cookies = buildSessionCookies(token, updatedUser);
+  cookies.forEach((c) => Astro.response.headers.append('Set-Cookie', c));
+}
+
+const status = Astro.url.searchParams.get('status');
+
+// Fetch approved skills and group by category (sorted client-side to avoid composite index)
+const skillsSnap = await db.collection('skills').where('approved', '==', true).get();
+const allSkills = skillsSnap.docs
+  .map((d) => d.data() as Skill)
+  .sort((a, b) => a.category.localeCompare(b.category) || a.name.localeCompare(b.name));
+
+const CATEGORY_ORDER = [
+  'Languages',
+  'Frontend',
+  'Backend',
+  'CMS & No-Code',
+  'Mobile',
+  'Database',
+  'Cloud & DevOps',
+  'AI / ML',
+  'Testing',
+  'Design & UX',
+  'Science & Data',
+  'IT & Sysadmin',
+  'Cyber Security',
+  'Amateur Radio',
+  'Maker & Fabrication',
+  'Gaming',
+  'Community & Leadership',
+];
+const grouped = allSkills.reduce<Record<string, Skill[]>>((acc, s) => {
+  (acc[s.category] ??= []).push(s);
+  return acc;
+}, {});
+const sortedCategories = [
+  ...CATEGORY_ORDER.filter((c) => grouped[c]),
+  ...Object.keys(grouped)
+    .filter((c) => !CATEGORY_ORDER.includes(c))
+    .sort(),
+];
+
+const LOOKING_FOR_OPTIONS = [
+  { value: 'jobs', label: 'Open to work' },
+  { value: 'collaborators', label: 'Seeking collaborators' },
+  { value: 'mentors', label: 'Looking for mentors' },
+  { value: 'mentees', label: 'Open to mentoring' },
+  { value: 'open-source', label: 'Open source projects' },
+];
+---
+
+<PageLayout metadata={{ title: 'My Profile — Space Coast Devs' }}>
+  <section class="py-12 md:py-20">
+    <div class="max-w-2xl mx-auto px-4 sm:px-6">
+      <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-white">My Profile</h1>
+        <p class="text-gray-500 dark:text-gray-400 mt-1.5 text-sm">
+          This is how you appear in the <a href="/members" class="underline hover:text-primary">member directory</a>.
+        </p>
+      </div>
+
+      {
+        status === 'saved' && (
+          <div class="mb-6 rounded-lg bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800 px-4 py-3 text-sm text-green-800 dark:text-green-200">
+            Profile saved successfully!
+          </div>
+        )
+      }
+
+      <div class="flex items-center gap-4 mb-8 p-4 rounded-xl bg-gray-50 dark:bg-slate-800">
+        <img
+          src={profile.avatarUrl}
+          alt={profile.displayName}
+          width="64"
+          height="64"
+          class="rounded-full w-16 h-16 object-cover"
+        />
+        <div>
+          <p class="font-semibold text-gray-900 dark:text-white">{profile.displayName}</p>
+          <p class="text-sm text-gray-500 dark:text-gray-400">
+            @{profile.discordUsername} · Avatar synced from Discord
+          </p>
+        </div>
+      </div>
+
+      <form method="POST" action="/api/profile" class="space-y-6">
+        <div>
+          <label for="displayName" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            Display Name
+          </label>
+          <input
+            id="displayName"
+            name="displayName"
+            type="text"
+            value={profile.displayName}
+            maxlength="100"
+            class="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-900 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+          />
+        </div>
+
+        <div>
+          <label for="bio" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            About
+            <span class="font-normal text-gray-400 ml-1">(Markdown supported · max 1024 characters)</span>
+          </label>
+          <textarea
+            id="bio"
+            name="bio"
+            rows="6"
+            maxlength="1024"
+            class="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-900 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary resize-y"
+            >{profile.bio}</textarea
+          >
+        </div>
+
+        <div>
+          <label for="location" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            Location
+          </label>
+          <input
+            id="location"
+            name="location"
+            type="text"
+            value={profile.location}
+            placeholder="e.g. Melbourne, FL"
+            maxlength="100"
+            class="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-900 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+          />
+        </div>
+
+        <fieldset>
+          <legend class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Social Links</legend>
+          <div class="space-y-3">
+            {
+              [
+                { name: 'website', label: 'Website', placeholder: 'https://yoursite.com' },
+                { name: 'github', label: 'GitHub username', placeholder: 'octocat' },
+                { name: 'linkedin', label: 'LinkedIn username', placeholder: 'yourname' },
+                { name: 'bluesky', label: 'Bluesky handle', placeholder: 'yourname.bsky.social' },
+              ].map(({ name, label, placeholder }) => (
+                <div class="flex items-center gap-3">
+                  <label for={name} class="w-36 shrink-0 text-sm text-gray-600 dark:text-gray-400">
+                    {label}
+                  </label>
+                  <input
+                    id={name}
+                    name={name}
+                    type="text"
+                    value={(profile as unknown as Record<string, unknown>)[name] as string}
+                    placeholder={placeholder}
+                    maxlength="200"
+                    class="flex-1 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-900 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                  />
+                </div>
+              ))
+            }
+          </div>
+        </fieldset>
+
+        <fieldset id="skills-fieldset">
+          <div class="flex items-center justify-between mb-3">
+            <legend class="text-sm font-medium text-gray-700 dark:text-gray-300"> Skills & Technologies </legend>
+            <span id="skill-count" class="text-xs text-gray-400">{profile.skills.length} / 50 selected</span>
+          </div>
+
+          <input
+            id="skill-search"
+            type="search"
+            placeholder="Filter skills…"
+            autocomplete="off"
+            class="w-full mb-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+          />
+          <p id="skill-limit-msg" class="hidden text-xs mb-3 text-amber-600 dark:text-amber-400">
+            You've reached the 50-skill limit. Deselect one to add another.
+          </p>
+
+          <!-- Hidden inputs populated by JS on form submit -->
+          <div id="skill-hidden-inputs">
+            {profile.skills.map((s) => <input type="hidden" name="skills" value={s} />)}
+          </div>
+
+          <div class="space-y-4">
+            {
+              sortedCategories.map((category) => (
+                <div class="skill-category">
+                  <p class="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2">
+                    {category}
+                  </p>
+                  <div class="flex flex-wrap gap-2">
+                    {grouped[category].map((skill) => (
+                      <button
+                        type="button"
+                        class:list={['skill-tag', profile.skills.includes(skill.name) && 'skill-selected']}
+                        data-skill={skill.name}
+                      >
+                        {skill.name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ))
+            }
+          </div>
+
+          <div class="mt-5 pt-4 border-t border-gray-200 dark:border-gray-700">
+            <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">Don't see your skill? Suggest it for review:</p>
+            <div class="flex gap-2">
+              <input
+                id="suggest-input"
+                type="text"
+                placeholder="e.g. Zig, Unity, Godot…"
+                maxlength="60"
+                class="flex-1 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+              />
+              <button
+                type="button"
+                id="suggest-btn"
+                class="px-4 py-2 text-sm rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors whitespace-nowrap"
+              >
+                Suggest
+              </button>
+            </div>
+            <p id="suggest-msg" class="text-xs mt-2 hidden"></p>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Looking For</legend>
+          <div class="space-y-2">
+            {
+              LOOKING_FOR_OPTIONS.map(({ value, label }) => (
+                <label class="flex items-center gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    name="lookingFor"
+                    value={value}
+                    checked={profile.lookingFor.includes(value)}
+                    class="w-4 h-4 rounded text-primary focus:ring-primary"
+                  />
+                  <span class="text-sm text-gray-700 dark:text-gray-300">{label}</span>
+                </label>
+              ))
+            }
+          </div>
+        </fieldset>
+
+        <div class="flex items-center gap-3">
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input
+              type="checkbox"
+              name="isPublic"
+              value="true"
+              checked={profile.isPublic}
+              id="isPublic"
+              class="w-4 h-4 rounded text-primary focus:ring-primary"
+            />
+            <span class="text-sm text-gray-700 dark:text-gray-300">Show my profile in the member directory</span>
+          </label>
+        </div>
+
+        <div class="flex items-center justify-between pt-2">
+          <button
+            type="submit"
+            class="px-6 py-2.5 rounded-lg bg-primary text-white text-sm font-semibold hover:bg-blue-700 transition-colors"
+          >
+            Save Profile
+          </button>
+          <a
+            href={`/members/${user.discordId}`}
+            class="text-sm text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors"
+          >
+            View public profile →
+          </a>
+        </div>
+      </form>
+
+      <div class="mt-10 pt-6 border-t border-gray-200 dark:border-gray-700">
+        <a
+          href="/api/auth/logout"
+          class="text-sm text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors"
+        >
+          Sign out
+        </a>
+      </div>
+    </div>
+  </section>
+</PageLayout>
+
+<style>
+  .skill-tag {
+    @apply px-3 py-1 text-sm rounded-full border cursor-pointer transition-colors;
+    @apply bg-gray-50 dark:bg-slate-800 border-gray-200 dark:border-gray-700;
+    @apply text-gray-600 dark:text-gray-300;
+    @apply hover:border-blue-400 dark:hover:border-blue-500;
+  }
+  .skill-tag.skill-selected {
+    @apply bg-blue-50 dark:bg-blue-950 border-blue-400 dark:border-blue-500;
+    @apply text-blue-700 dark:text-blue-300 font-medium;
+  }
+</style>
+
+<script>
+  const MAX_SKILLS = 50;
+  let selected = new Set<string>();
+
+  function syncHiddenInputs() {
+    const hiddenContainer = document.getElementById('skill-hidden-inputs');
+    const countLabel = document.getElementById('skill-count');
+    if (!hiddenContainer) return;
+    hiddenContainer.innerHTML = '';
+    selected.forEach((skill) => {
+      const inp = document.createElement('input');
+      inp.type = 'hidden';
+      inp.name = 'skills';
+      inp.value = skill;
+      hiddenContainer.appendChild(inp);
+    });
+    if (countLabel) countLabel.textContent = `${selected.size} / ${MAX_SKILLS} selected`;
+  }
+
+  // Single delegated listener on document — survives View Transitions DOM swaps
+  document.addEventListener('click', (e) => {
+    const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('.skill-tag');
+    if (!btn) return;
+    const skill = btn.dataset.skill!;
+    if (selected.has(skill)) {
+      selected.delete(skill);
+      btn.classList.remove('skill-selected');
+    } else if (selected.size < MAX_SKILLS) {
+      selected.add(skill);
+      btn.classList.add('skill-selected');
+    } else {
+      const limitMsg = document.getElementById('skill-limit-msg');
+      if (limitMsg) {
+        limitMsg.classList.remove('hidden');
+        clearTimeout((limitMsg as HTMLElement & { _hideTimer?: number })._hideTimer);
+        (limitMsg as HTMLElement & { _hideTimer?: number })._hideTimer = window.setTimeout(
+          () => limitMsg.classList.add('hidden'),
+          3000
+        );
+      }
+    }
+    syncHiddenInputs();
+  });
+
+  // Re-run on each page load to re-initialize selected from current DOM
+  function initPage() {
+    const hiddenContainer = document.getElementById('skill-hidden-inputs');
+    if (!hiddenContainer) return; // not on the profile page
+
+    selected = new Set(Array.from(hiddenContainer.querySelectorAll<HTMLInputElement>('input')).map((i) => i.value));
+
+    // Search / filter
+    const searchInput = document.getElementById('skill-search') as HTMLInputElement | null;
+    if (searchInput && !searchInput.dataset.bound) {
+      searchInput.dataset.bound = 'true';
+      searchInput.addEventListener('input', () => {
+        const q = searchInput.value.toLowerCase();
+        document.querySelectorAll<HTMLButtonElement>('.skill-tag').forEach((btn) => {
+          btn.style.display = !q || btn.dataset.skill!.toLowerCase().includes(q) ? '' : 'none';
+        });
+        document.querySelectorAll<HTMLElement>('.skill-category').forEach((cat) => {
+          const anyVisible = Array.from(cat.querySelectorAll<HTMLButtonElement>('.skill-tag')).some(
+            (b) => b.style.display !== 'none'
+          );
+          cat.style.display = anyVisible ? '' : 'none';
+        });
+      });
+    }
+
+    // Skill suggestion
+    const suggestBtn = document.getElementById('suggest-btn') as HTMLButtonElement | null;
+    const suggestInput = document.getElementById('suggest-input') as HTMLInputElement | null;
+    const suggestMsg = document.getElementById('suggest-msg');
+
+    if (suggestBtn && !suggestBtn.dataset.bound) {
+      suggestBtn.dataset.bound = 'true';
+      suggestBtn.addEventListener('click', async () => {
+        const name = suggestInput?.value.trim() ?? '';
+        if (!name || !suggestMsg) return;
+        suggestBtn.disabled = true;
+        suggestBtn.textContent = 'Submitting…';
+        const res = await fetch('/api/skills', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name }),
+        });
+        const data = (await res.json()) as { ok?: boolean; error?: string };
+        suggestMsg.classList.remove('hidden');
+        if (res.ok) {
+          suggestMsg.textContent = '✓ Thanks! Your suggestion has been submitted for review.';
+          suggestMsg.className = 'text-xs mt-2 text-green-600 dark:text-green-400';
+          if (suggestInput) suggestInput.value = '';
+        } else {
+          suggestMsg.textContent = data.error ?? 'Something went wrong. Please try again.';
+          suggestMsg.className = 'text-xs mt-2 text-red-600 dark:text-red-400';
+        }
+        suggestBtn.textContent = 'Suggest';
+        suggestBtn.disabled = false;
+      });
+    }
+
+    // isPublic hidden field
+    const cb = document.getElementById('isPublic') as HTMLInputElement | null;
+    if (cb?.form && !cb.form.dataset.bound) {
+      cb.form.dataset.bound = 'true';
+      cb.form.addEventListener('submit', () => {
+        if (!cb.checked) {
+          const hidden = document.createElement('input');
+          hidden.type = 'hidden';
+          hidden.name = 'isPublic';
+          hidden.value = 'false';
+          cb.form?.appendChild(hidden);
+        }
+      });
+    }
+  }
+
+  initPage();
+  document.addEventListener('astro:page-load', initPage);
+</script>

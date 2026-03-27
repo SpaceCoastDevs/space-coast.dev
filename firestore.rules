@@ -1,0 +1,19 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /members/{userId} {
+      // All reads and writes go through the Admin SDK (server-side only)
+      allow read, write: if false;
+    }
+    match /verifications/{userId} {
+      // Sensitive — Admin SDK only
+      allow read, write: if false;
+    }
+    match /skills/{skillId} {
+      // Anyone can browse the approved skill list
+      allow read: if true;
+      // All writes go through the Admin SDK
+      allow write: if false;
+    }
+  }
+}

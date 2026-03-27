@@ -8,6 +8,10 @@ export const headerData = {
       href: getPermalink(),
     },
     {
+      text: 'Members',
+      href: '/members',
+    },
+    {
       text: 'Posts',
       links: [
         {

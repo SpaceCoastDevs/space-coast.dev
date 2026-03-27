@@ -1,0 +1,172 @@
+---
+export const prerender = false;
+
+import PageLayout from '~/layouts/PageLayout.astro';
+import { Icon } from 'astro-icon/components';
+import { marked } from 'marked';
+import { db } from '~/lib/firebase';
+import type { MemberProfile } from '~/lib/firebase';
+
+const { id } = Astro.params;
+
+if (!id) {
+  return Astro.redirect('/members');
+}
+
+const doc = await db.collection('members').doc(id).get();
+
+if (!doc.exists) {
+  return new Response(null, { status: 404 });
+}
+
+const member = doc.data() as MemberProfile;
+
+if (!member.isPublic) {
+  return new Response(null, { status: 404 });
+}
+
+function parseBio(text: string): string {
+  // Escape angle brackets before parsing to prevent raw HTML injection
+  const sanitized = text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const html = marked.parse(sanitized, { gfm: true, breaks: true }) as string;
+  // Open all links in a new tab and strip any javascript: hrefs
+  return html
+    .replace(/<a\s/g, '<a target="_blank" rel="noopener noreferrer" ')
+    .replace(/href="javascript:[^"]*"/gi, 'href="#"');
+}
+
+const bioHtml = member.bio ? parseBio(member.bio) : '';
+// Plain text bio for meta description (strip Markdown syntax)
+const bioPlain = member.bio.replace(/[*_`~#>[\]]/g, '').trim();
+
+const socialLinks = [
+  { key: 'website', label: 'Website', icon: 'tabler:world', href: member.website },
+  {
+    key: 'github',
+    label: 'GitHub',
+    icon: 'tabler:brand-github',
+    href: member.github ? `https://github.com/${member.github.replace(/^@/, '')}` : '',
+  },
+  {
+    key: 'linkedin',
+    label: 'LinkedIn',
+    icon: 'tabler:brand-linkedin',
+    href: member.linkedin ? `https://linkedin.com/in/${member.linkedin.replace(/^.*linkedin\.com\/in\//, '')}` : '',
+  },
+  {
+    key: 'bluesky',
+    label: 'Bluesky',
+    icon: 'tabler:brand-bluesky',
+    href: member.bluesky ? `https://bsky.app/profile/${member.bluesky.replace(/^@/, '')}` : '',
+  },
+].filter((s) => s.href);
+
+const lookingForLabels: Record<string, string> = {
+  jobs: 'Open to work',
+  collaborators: 'Seeking collaborators',
+  mentors: 'Looking for mentors',
+  mentees: 'Open to mentoring',
+  'open-source': 'Open source',
+};
+---
+
+<PageLayout
+  metadata={{
+    title: `${member.displayName} — Space Coast Devs`,
+    description: bioPlain || `${member.displayName} is a member of Space Coast Devs.`,
+  }}
+>
+  <section class="py-12 md:py-20">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6">
+      <a
+        href="/members"
+        class="inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-primary mb-8 transition-colors"
+      >
+        <Icon name="tabler:arrow-left" class="w-4 h-4" />
+        Back to directory
+      </a>
+
+      <div class="flex flex-col sm:flex-row gap-6 items-start">
+        <img
+          src={member.avatarUrl}
+          alt={member.displayName}
+          width="96"
+          height="96"
+          class="rounded-2xl w-24 h-24 object-cover ring-4 ring-gray-100 dark:ring-gray-800 shrink-0"
+        />
+        <div class="flex-1 min-w-0">
+          <h1 class="text-3xl font-bold text-gray-900 dark:text-white">{member.displayName}</h1>
+          <p class="text-gray-500 dark:text-gray-400 text-sm mt-0.5">@{member.discordUsername}</p>
+          {
+            member.location && (
+              <p class="flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 mt-2">
+                <Icon name="tabler:map-pin" class="w-4 h-4 shrink-0" />
+                {member.location}
+              </p>
+            )
+          }
+          {
+            socialLinks.length > 0 && (
+              <div class="flex flex-wrap gap-3 mt-4">
+                {socialLinks.map((s) => (
+                  <a
+                    href={s.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="flex items-center gap-1.5 text-sm text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors"
+                    aria-label={s.label}
+                  >
+                    <Icon name={s.icon} class="w-5 h-5" />
+                    <span>{s.label}</span>
+                  </a>
+                ))}
+              </div>
+            )
+          }
+        </div>
+      </div>
+
+      {
+        bioHtml && (
+          <div class="mt-8">
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">About</h2>
+            <div
+              class="prose prose-sm dark:prose-invert max-w-none text-gray-600 dark:text-gray-300"
+              set:html={bioHtml}
+            />
+          </div>
+        )
+      }
+
+      {
+        member.skills.length > 0 && (
+          <div class="mt-8">
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">Skills & Technologies</h2>
+            <div class="flex flex-wrap gap-2">
+              {member.skills.map((skill) => (
+                <span class="px-3 py-1 rounded-full text-sm bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300">
+                  {skill}
+                </span>
+              ))}
+            </div>
+          </div>
+        )
+      }
+
+      {
+        member.lookingFor.length > 0 && (
+          <div class="mt-8">
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">Looking For</h2>
+            <div class="flex flex-wrap gap-2">
+              {member.lookingFor.map((key) => (
+                <span class="px-3 py-1 rounded-full text-sm bg-purple-50 dark:bg-purple-950 text-purple-700 dark:text-purple-300">
+                  {lookingForLabels[key] ?? key}
+                </span>
+              ))}
+            </div>
+          </div>
+        )
+      }
+    </div>
+  </section>
+</PageLayout>
