@@ -65,6 +65,7 @@ export const GET: APIRoute = async ({ request, url }) => {
         isPublic: true,
         emailVerified: false,
         email: '',
+        announced: false,
         joinedAt: FieldValue.serverTimestamp(),
         updatedAt: FieldValue.serverTimestamp(),
       });

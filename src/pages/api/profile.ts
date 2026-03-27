@@ -70,12 +70,11 @@ export const POST: APIRoute = async ({ request }) => {
 
   const docRef = db.collection('members').doc(user.discordId);
   const existing = await docRef.get();
-  const wasPublic: boolean = existing.data()?.isPublic ?? false;
+  const shouldAnnounce = existing.data()?.announced === false && updates.isPublic;
 
-  await docRef.update(updates);
+  await docRef.update(shouldAnnounce ? { ...updates, announced: true } : updates);
 
-  // Notify Discord the first time a member makes their profile public
-  if (!wasPublic && updates.isPublic) {
+  if (shouldAnnounce) {
     const d = existing.data() ?? {};
     notifyNewMember({
       discordId: user.discordId,
