@@ -13,6 +13,7 @@
     "build": "astro build && cp _redirects dist/_redirects",
     "preview": "astro preview",
     "seed:skills": "tsx scripts/seed-skills.ts",
+    "announce:missed": "tsx scripts/announce-missed-members.ts",
     "astro": "astro",
     "check": "npm run check:astro && npm run check:eslint && npm run check:prettier",
     "check:astro": "astro check",
