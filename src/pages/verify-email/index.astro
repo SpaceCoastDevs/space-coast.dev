@@ -2,11 +2,23 @@
 export const prerender = false;
 
 import PageLayout from '~/layouts/PageLayout.astro';
-import { getSession } from '~/lib/auth';
+import { getSession, createSession, buildSessionCookies } from '~/lib/auth';
+import { db } from '~/lib/firebase';
 
 const user = await getSession(Astro.request);
 if (!user) return Astro.redirect('/api/auth/login');
 if (user.emailVerified) return Astro.redirect('/profile');
+
+// JWT may be stale — check Firestore as the source of truth
+const doc = await db.collection('members').doc(user.discordId).get();
+if (doc.data()?.emailVerified === true) {
+  const updatedUser = { ...user, emailVerified: true };
+  const token = await createSession(updatedUser);
+  const cookies = buildSessionCookies(token, updatedUser);
+  const headers = new Headers({ Location: '/profile' });
+  cookies.forEach((c) => headers.append('Set-Cookie', c));
+  return new Response(null, { status: 302, headers });
+}
 ---
 
 <PageLayout metadata={{ title: 'Verify Your Email — Space Coast Devs', description: 'Verify your email to activate your Space Coast Devs membership.' }}>

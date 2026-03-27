@@ -4,18 +4,28 @@ export const prerender = false;
 import PageLayout from '~/layouts/PageLayout.astro';
 import { db } from '~/lib/firebase';
 import type { MemberProfile, Skill } from '~/lib/firebase';
-import { getSession } from '~/lib/auth';
+import { getSession, createSession, buildSessionCookies } from '~/lib/auth';
 
 const user = await getSession(Astro.request);
 if (!user) {
   return Astro.redirect('/api/auth/login');
 }
-if (!user.emailVerified) {
+
+// Read Firestore first — use it as the source of truth for emailVerified
+const doc = await db.collection('members').doc(user.discordId).get();
+const profile = doc.data() as MemberProfile;
+
+if (!profile?.emailVerified) {
   return Astro.redirect('/verify-email');
 }
 
-const doc = await db.collection('members').doc(user.discordId).get();
-const profile = doc.data() as MemberProfile;
+// Heal a stale JWT if the cookie pre-dates email verification
+if (!user.emailVerified) {
+  const updatedUser = { ...user, emailVerified: true };
+  const token = await createSession(updatedUser);
+  const cookies = buildSessionCookies(token, updatedUser);
+  cookies.forEach((c) => Astro.response.headers.append('Set-Cookie', c));
+}
 
 const status = Astro.url.searchParams.get('status');
 
