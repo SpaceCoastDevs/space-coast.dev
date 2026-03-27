@@ -12,7 +12,7 @@ export interface MemberNotifyPayload {
 export async function notifyNewMember(member: MemberNotifyPayload): Promise<void> {
   if (!WEBHOOK_URL) return;
 
-  const profileUrl = `https://spacecoast.dev/members/${member.discordId}`;
+  const profileUrl = `https://space-coast.dev/members/${member.discordId}`;
   const bioExcerpt = member.bio ? member.bio.slice(0, 200) + (member.bio.length > 200 ? '…' : '') : null;
 
   const fields: { name: string; value: string; inline?: boolean }[] = [];
@@ -36,7 +36,7 @@ export async function notifyNewMember(member: MemberNotifyPayload): Promise<void
         description: bioExcerpt ?? undefined,
         color: 0x5865f2, // Discord blurple
         fields,
-        footer: { text: 'spacecoast.dev/members' },
+        footer: { text: 'space-coast.dev/members' },
       },
     ],
   };
