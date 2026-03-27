@@ -12,7 +12,7 @@ interface Props {
 }
 
 const { discordId, displayName, avatarUrl, location, bio = '', skills = [], lookingFor = [] } = Astro.props;
-const bioPlain = bio.replace(/[*_`~#>\[\]]/g, '').trim();
+const bioPlain = bio.replace(/[*_`~#>[\]]/g, '').trim();
 
 const lookingForLabels: Record<string, string> = {
   jobs: 'Open to work',

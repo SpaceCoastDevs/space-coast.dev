@@ -76,7 +76,13 @@ export const GET: APIRoute = async ({ request, url }) => {
       });
     }
 
-    const sessionUser = { discordId: discordUser.id, discordUsername: discordUser.username, displayName, avatarUrl, emailVerified };
+    const sessionUser = {
+      discordId: discordUser.id,
+      discordUsername: discordUser.username,
+      displayName,
+      avatarUrl,
+      emailVerified,
+    };
     const token = await createSession(sessionUser);
     const cookieHeaders = buildSessionCookies(token, sessionUser);
 

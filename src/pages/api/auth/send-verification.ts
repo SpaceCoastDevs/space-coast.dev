@@ -36,15 +36,12 @@ export const POST: APIRoute = async ({ request }) => {
   if (existing.exists) {
     const createdAt = existing.data()?.createdAt as Timestamp | undefined;
     if (createdAt && Date.now() - createdAt.toMillis() < 60_000) {
-      return Response.json(
-        { error: 'Please wait 60 seconds before requesting a new code.' },
-        { status: 429 }
-      );
+      return Response.json({ error: 'Please wait 60 seconds before requesting a new code.' }, { status: 429 });
     }
   }
 
   // 6-digit code (100000–999999)
-  const code = String(crypto.getRandomValues(new Uint32Array(1))[0] % 900000 + 100000);
+  const code = String((crypto.getRandomValues(new Uint32Array(1))[0] % 900000) + 100000);
   const expiresAt = Timestamp.fromDate(new Date(Date.now() + 15 * 60 * 1000));
 
   await verRef.set({

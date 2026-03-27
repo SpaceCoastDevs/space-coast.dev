@@ -11,10 +11,7 @@ export const GET: APIRoute = async () => {
   });
 
   // Short-lived state cookie for CSRF protection (10 minute expiry)
-  headers.append(
-    'Set-Cookie',
-    `oauth_state=${state}; HttpOnly; Path=/; Max-Age=600; SameSite=Lax`
-  );
+  headers.append('Set-Cookie', `oauth_state=${state}; HttpOnly; Path=/; Max-Age=600; SameSite=Lax`);
 
   return new Response(null, { status: 302, headers });
 };

@@ -52,9 +52,7 @@ export const POST: APIRoute = async ({ request }) => {
     .filter(Boolean)
     .slice(0, MAX_SKILLS);
 
-  const lookingFor = (form.getAll('lookingFor') as string[]).filter((v) =>
-    ALLOWED_LOOKING_FOR.includes(v)
-  );
+  const lookingFor = (form.getAll('lookingFor') as string[]).filter((v) => ALLOWED_LOOKING_FOR.includes(v));
 
   const updates = {
     displayName: sanitize(form.get('displayName')) || user.displayName,

@@ -27,10 +27,7 @@ export const POST: APIRoute = async ({ request }) => {
   const verDoc = await verRef.get();
 
   if (!verDoc.exists) {
-    return Response.json(
-      { error: 'No verification in progress. Please request a new code.' },
-      { status: 400 }
-    );
+    return Response.json({ error: 'No verification in progress. Please request a new code.' }, { status: 400 });
   }
 
   const ver = verDoc.data()!;
@@ -38,19 +35,13 @@ export const POST: APIRoute = async ({ request }) => {
   // Check expiry
   if ((ver.expiresAt as Timestamp).toMillis() < Timestamp.now().toMillis()) {
     await verRef.delete();
-    return Response.json(
-      { error: 'This code has expired. Please request a new one.' },
-      { status: 400 }
-    );
+    return Response.json({ error: 'This code has expired. Please request a new one.' }, { status: 400 });
   }
 
   // Check attempts limit
   if ((ver.attempts as number) >= 5) {
     await verRef.delete();
-    return Response.json(
-      { error: 'Too many incorrect attempts. Please request a new code.' },
-      { status: 400 }
-    );
+    return Response.json({ error: 'Too many incorrect attempts. Please request a new code.' }, { status: 400 });
   }
 
   // Check the code
@@ -64,11 +55,14 @@ export const POST: APIRoute = async ({ request }) => {
   }
 
   // Code correct — activate the member
-  await db.collection('members').doc(user.discordId).update({
-    email: ver.email as string,
-    emailVerified: true,
-    updatedAt: FieldValue.serverTimestamp(),
-  });
+  await db
+    .collection('members')
+    .doc(user.discordId)
+    .update({
+      email: ver.email as string,
+      emailVerified: true,
+      updatedAt: FieldValue.serverTimestamp(),
+    });
   await verRef.delete();
 
   // Re-issue the JWT with emailVerified: true

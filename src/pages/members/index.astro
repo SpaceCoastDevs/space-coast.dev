@@ -9,15 +9,12 @@ import type { MemberProfile } from '~/lib/firebase';
 const error = Astro.url.searchParams.get('error');
 
 const errorMessages: Record<string, string> = {
-  not_member: "You must be a member of the Space Coast Devs Discord server to create a profile. Join us first!",
-  invalid_state: "Something went wrong with the authentication flow. Please try again.",
-  auth_failed: "Authentication failed. Please try again.",
+  not_member: 'You must be a member of the Space Coast Devs Discord server to create a profile. Join us first!',
+  invalid_state: 'Something went wrong with the authentication flow. Please try again.',
+  auth_failed: 'Authentication failed. Please try again.',
 };
 
-const snapshot = await db
-  .collection('members')
-  .where('emailVerified', '==', true)
-  .get();
+const snapshot = await db.collection('members').where('emailVerified', '==', true).get();
 const members = snapshot.docs
   .map((doc) => ({ id: doc.id, ...(doc.data() as MemberProfile) }))
   .filter((m) => m.isPublic);
@@ -26,7 +23,12 @@ const members = snapshot.docs
 members.sort((a, b) => a.displayName.localeCompare(b.displayName));
 ---
 
-<PageLayout metadata={{ title: 'Member Directory — Space Coast Devs', description: 'Meet the members of the Space Coast Devs community.' }}>
+<PageLayout
+  metadata={{
+    title: 'Member Directory — Space Coast Devs',
+    description: 'Meet the members of the Space Coast Devs community.',
+  }}
+>
   <section class="py-12 md:py-20">
     <div class="max-w-7xl mx-auto px-4 sm:px-6">
       <div class="mb-10 text-center">
@@ -64,13 +66,13 @@ members.sort((a, b) => a.displayName.localeCompare(b.displayName));
       {
         members.length === 0 ? (
           <p class="text-center text-gray-500 dark:text-gray-400 py-16">
-            No members yet. <a href="/api/auth/login" class="text-primary underline">Be the first to join!</a>
+            No members yet.{' '}
+            <a href="/api/auth/login" class="text-primary underline">
+              Be the first to join!
+            </a>
           </p>
         ) : (
-          <div
-            id="member-grid"
-            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"
-          >
+          <div id="member-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
             {members.map((m) => (
               <MemberCard
                 discordId={m.discordId}
@@ -87,7 +89,8 @@ members.sort((a, b) => a.displayName.localeCompare(b.displayName));
       }
 
       <p class="text-center text-sm text-gray-400 dark:text-gray-600 mt-12">
-        <a href="/api/auth/login" class="underline hover:text-primary transition-colors">Sign in with Discord</a> to create your profile and appear in the directory.
+        <a href="/api/auth/login" class="underline hover:text-primary transition-colors">Sign in with Discord</a> to create
+        your profile and appear in the directory.
       </p>
     </div>
   </section>

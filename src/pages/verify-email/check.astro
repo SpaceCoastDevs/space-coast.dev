@@ -20,14 +20,30 @@ if (doc.data()?.emailVerified === true) {
 }
 ---
 
-<PageLayout metadata={{ title: 'Enter Verification Code — Space Coast Devs', description: 'Enter the code sent to your email to activate your membership.' }}>
+<PageLayout
+  metadata={{
+    title: 'Enter Verification Code — Space Coast Devs',
+    description: 'Enter the code sent to your email to activate your membership.',
+  }}
+>
   <section class="py-16 md:py-24">
     <div class="max-w-md mx-auto px-4">
       <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 p-8">
         <div class="text-center mb-8">
-          <div class="inline-flex items-center justify-center w-14 h-14 rounded-full bg-green-50 dark:bg-green-950 mb-4">
-            <svg class="w-7 h-7 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          <div
+            class="inline-flex items-center justify-center w-14 h-14 rounded-full bg-green-50 dark:bg-green-950 mb-4"
+          >
+            <svg
+              class="w-7 h-7 text-green-600 dark:text-green-400"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
             </svg>
           </div>
           <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Check your inbox</h1>
@@ -36,7 +52,11 @@ if (doc.data()?.emailVerified === true) {
           </p>
         </div>
 
-        <div id="error-msg" class="hidden mb-4 rounded-lg bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 px-4 py-3 text-sm text-red-700 dark:text-red-300"></div>
+        <div
+          id="error-msg"
+          class="hidden mb-4 rounded-lg bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 px-4 py-3 text-sm text-red-700 dark:text-red-300"
+        >
+        </div>
 
         <div class="space-y-4">
           <div>
@@ -106,7 +126,7 @@ if (doc.data()?.emailVerified === true) {
         body: JSON.stringify({ code }),
       });
 
-      const data = await res.json() as { ok?: boolean; error?: string };
+      const data = (await res.json()) as { ok?: boolean; error?: string };
 
       if (!res.ok) {
         showError(data.error ?? 'Something went wrong. Please try again.');

@@ -21,14 +21,24 @@ if (doc.data()?.emailVerified === true) {
 }
 ---
 
-<PageLayout metadata={{ title: 'Verify Your Email — Space Coast Devs', description: 'Verify your email to activate your Space Coast Devs membership.' }}>
+<PageLayout
+  metadata={{
+    title: 'Verify Your Email — Space Coast Devs',
+    description: 'Verify your email to activate your Space Coast Devs membership.',
+  }}
+>
   <section class="py-16 md:py-24">
     <div class="max-w-md mx-auto px-4">
       <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 p-8">
         <div class="text-center mb-8">
           <div class="inline-flex items-center justify-center w-14 h-14 rounded-full bg-blue-50 dark:bg-blue-950 mb-4">
             <svg class="w-7 h-7 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+              ></path>
             </svg>
           </div>
           <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Verify your email</h1>
@@ -37,7 +47,11 @@ if (doc.data()?.emailVerified === true) {
           </p>
         </div>
 
-        <div id="error-msg" class="hidden mb-4 rounded-lg bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 px-4 py-3 text-sm text-red-700 dark:text-red-300"></div>
+        <div
+          id="error-msg"
+          class="hidden mb-4 rounded-lg bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 px-4 py-3 text-sm text-red-700 dark:text-red-300"
+        >
+        </div>
 
         <div class="space-y-4">
           <div>
@@ -99,7 +113,7 @@ if (doc.data()?.emailVerified === true) {
         body: JSON.stringify({ email }),
       });
 
-      const data = await res.json() as { ok?: boolean; error?: string };
+      const data = (await res.json()) as { ok?: boolean; error?: string };
 
       if (!res.ok) {
         showError(data.error ?? 'Something went wrong. Please try again.');

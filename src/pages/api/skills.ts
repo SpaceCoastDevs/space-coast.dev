@@ -25,14 +25,9 @@ export const POST: APIRoute = async ({ request }) => {
   }
 
   // Check for a duplicate (case-insensitive) among approved skills
-  const existing = await db
-    .collection('skills')
-    .where('approved', '==', true)
-    .get();
+  const existing = await db.collection('skills').where('approved', '==', true).get();
 
-  const duplicate = existing.docs.some(
-    (d) => (d.data().name as string).toLowerCase() === name.toLowerCase()
-  );
+  const duplicate = existing.docs.some((d) => (d.data().name as string).toLowerCase() === name.toLowerCase());
 
   if (duplicate) {
     return new Response(JSON.stringify({ error: 'That skill is already in the list' }), {

@@ -37,13 +37,28 @@ function parseBio(text: string): string {
 
 const bioHtml = member.bio ? parseBio(member.bio) : '';
 // Plain text bio for meta description (strip Markdown syntax)
-const bioPlain = member.bio.replace(/[*_`~#>\[\]]/g, '').trim();
+const bioPlain = member.bio.replace(/[*_`~#>[\]]/g, '').trim();
 
 const socialLinks = [
   { key: 'website', label: 'Website', icon: 'tabler:world', href: member.website },
-  { key: 'github', label: 'GitHub', icon: 'tabler:brand-github', href: member.github ? `https://github.com/${member.github.replace(/^@/, '')}` : '' },
-  { key: 'linkedin', label: 'LinkedIn', icon: 'tabler:brand-linkedin', href: member.linkedin ? `https://linkedin.com/in/${member.linkedin.replace(/^.*linkedin\.com\/in\//, '')}` : '' },
-  { key: 'bluesky', label: 'Bluesky', icon: 'tabler:brand-bluesky', href: member.bluesky ? `https://bsky.app/profile/${member.bluesky.replace(/^@/, '')}` : '' },
+  {
+    key: 'github',
+    label: 'GitHub',
+    icon: 'tabler:brand-github',
+    href: member.github ? `https://github.com/${member.github.replace(/^@/, '')}` : '',
+  },
+  {
+    key: 'linkedin',
+    label: 'LinkedIn',
+    icon: 'tabler:brand-linkedin',
+    href: member.linkedin ? `https://linkedin.com/in/${member.linkedin.replace(/^.*linkedin\.com\/in\//, '')}` : '',
+  },
+  {
+    key: 'bluesky',
+    label: 'Bluesky',
+    icon: 'tabler:brand-bluesky',
+    href: member.bluesky ? `https://bsky.app/profile/${member.bluesky.replace(/^@/, '')}` : '',
+  },
 ].filter((s) => s.href);
 
 const lookingForLabels: Record<string, string> = {
@@ -55,10 +70,18 @@ const lookingForLabels: Record<string, string> = {
 };
 ---
 
-<PageLayout metadata={{ title: `${member.displayName} — Space Coast Devs`, description: bioPlain || `${member.displayName} is a member of Space Coast Devs.` }}>
+<PageLayout
+  metadata={{
+    title: `${member.displayName} — Space Coast Devs`,
+    description: bioPlain || `${member.displayName} is a member of Space Coast Devs.`,
+  }}
+>
   <section class="py-12 md:py-20">
     <div class="max-w-3xl mx-auto px-4 sm:px-6">
-      <a href="/members" class="inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-primary mb-8 transition-colors">
+      <a
+        href="/members"
+        class="inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-primary mb-8 transition-colors"
+      >
         <Icon name="tabler:arrow-left" class="w-4 h-4" />
         Back to directory
       </a>
@@ -107,7 +130,10 @@ const lookingForLabels: Record<string, string> = {
         bioHtml && (
           <div class="mt-8">
             <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">About</h2>
-            <div class="prose prose-sm dark:prose-invert max-w-none text-gray-600 dark:text-gray-300" set:html={bioHtml} />
+            <div
+              class="prose prose-sm dark:prose-invert max-w-none text-gray-600 dark:text-gray-300"
+              set:html={bioHtml}
+            />
           </div>
         )
       }

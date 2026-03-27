@@ -1,7 +1,6 @@
 ---
 import WidgetWrapper from '~/components/ui/WidgetWrapper.astro';
 import { Icon } from 'astro-icon/components';
-import { marked } from 'marked';
 import { db } from '~/lib/firebase';
 import type { MemberProfile } from '~/lib/firebase';
 
@@ -13,25 +12,28 @@ interface Props {
 const { id, isDark = false } = Astro.props;
 
 const snap = await db.collection('members').where('emailVerified', '==', true).get();
-const members = snap.docs
-  .map((d) => d.data() as MemberProfile)
-  .filter((m) => m.isPublic);
+const members = snap.docs.map((d) => d.data() as MemberProfile).filter((m) => m.isPublic);
 
 if (members.length === 0) return;
 
 const member = members[Math.floor(Math.random() * members.length)];
 
-// Render bio markdown, strip HTML for a plain-text excerpt
-const bioHtml = member.bio
-  ? await marked.parse(member.bio.replace(/</g, '&lt;').replace(/>/g, '&gt;'))
-  : '';
-const bioText = member.bio.replace(/[*_`~#>\[\]()]/g, '').trim();
+// Plain-text bio excerpt — strip Markdown syntax
+const bioText = member.bio.replace(/[*_`~#>[\]()]/g, '').trim();
 const bioExcerpt = bioText.slice(0, 200) + (bioText.length > 200 ? '…' : '');
 
 const socialLinks = [
   member.github && { href: `https://github.com/${member.github}`, icon: 'tabler:brand-github', label: 'GitHub' },
-  member.linkedin && { href: `https://linkedin.com/in/${member.linkedin}`, icon: 'tabler:brand-linkedin', label: 'LinkedIn' },
-  member.bluesky && { href: `https://bsky.app/profile/${member.bluesky}`, icon: 'tabler:brand-bluesky', label: 'Bluesky' },
+  member.linkedin && {
+    href: `https://linkedin.com/in/${member.linkedin}`,
+    icon: 'tabler:brand-linkedin',
+    label: 'LinkedIn',
+  },
+  member.bluesky && {
+    href: `https://bsky.app/profile/${member.bluesky}`,
+    icon: 'tabler:brand-bluesky',
+    label: 'Bluesky',
+  },
   member.website && { href: member.website, icon: 'tabler:world', label: 'Website' },
 ].filter(Boolean) as { href: string; icon: string; label: string }[];
 ---
@@ -42,9 +44,7 @@ const socialLinks = [
       <p class="text-sm font-semibold uppercase tracking-widest text-primary mb-1">Spotlight</p>
       <h2 class="text-3xl font-bold text-gray-900 dark:text-white">Member Spotlight</h2>
     </div>
-    <a href="/members" class="text-sm font-medium text-primary hover:underline shrink-0 ml-4">
-      Meet everyone →
-    </a>
+    <a href="/members" class="text-sm font-medium text-primary hover:underline shrink-0 ml-4"> Meet everyone → </a>
   </div>
 
   <a
@@ -60,15 +60,17 @@ const socialLinks = [
         height="96"
         class="rounded-full w-20 h-20 sm:w-24 sm:h-24 object-cover ring-4 ring-gray-100 dark:ring-gray-800 group-hover:ring-primary/30 transition-all"
       />
-      {socialLinks.length > 0 && (
-        <div class="flex gap-2">
-          {socialLinks.map((link) => (
-            <span class="text-gray-400 hover:text-primary transition-colors" title={link.label}>
-              <Icon name={link.icon} class="w-4 h-4" />
-            </span>
-          ))}
-        </div>
-      )}
+      {
+        socialLinks.length > 0 && (
+          <div class="flex gap-2">
+            {socialLinks.map((link) => (
+              <span class="text-gray-400 hover:text-primary transition-colors" title={link.label}>
+                <Icon name={link.icon} class="w-4 h-4" />
+              </span>
+            ))}
+          </div>
+        )
+      }
     </div>
 
     <!-- Info -->
@@ -77,32 +79,34 @@ const socialLinks = [
         <h3 class="text-xl font-bold text-gray-900 dark:text-white group-hover:text-primary transition-colors">
           {member.displayName}
         </h3>
-        {member.location && (
-          <span class="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-1">
-            <Icon name="tabler:map-pin" class="w-3.5 h-3.5 shrink-0" />
-            {member.location}
-          </span>
-        )}
+        {
+          member.location && (
+            <span class="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-1">
+              <Icon name="tabler:map-pin" class="w-3.5 h-3.5 shrink-0" />
+              {member.location}
+            </span>
+          )
+        }
       </div>
 
-      {bioExcerpt && (
-        <p class="text-gray-600 dark:text-gray-300 text-sm mb-4 leading-relaxed">{bioExcerpt}</p>
-      )}
+      {bioExcerpt && <p class="text-gray-600 dark:text-gray-300 text-sm mb-4 leading-relaxed">{bioExcerpt}</p>}
 
-      {member.skills.length > 0 && (
-        <div class="flex flex-wrap gap-1.5">
-          {member.skills.slice(0, 8).map((skill) => (
-            <span class="text-xs px-2.5 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300">
-              {skill}
-            </span>
-          ))}
-          {member.skills.length > 8 && (
-            <span class="text-xs px-2.5 py-0.5 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-500">
-              +{member.skills.length - 8} more
-            </span>
-          )}
-        </div>
-      )}
+      {
+        member.skills.length > 0 && (
+          <div class="flex flex-wrap gap-1.5">
+            {member.skills.slice(0, 8).map((skill) => (
+              <span class="text-xs px-2.5 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300">
+                {skill}
+              </span>
+            ))}
+            {member.skills.length > 8 && (
+              <span class="text-xs px-2.5 py-0.5 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-500">
+                +{member.skills.length - 8} more
+              </span>
+            )}
+          </div>
+        )
+      }
     </div>
   </a>
 </WidgetWrapper>
