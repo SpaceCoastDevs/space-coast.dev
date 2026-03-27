@@ -2,9 +2,9 @@ export const prerender = false;
 
 import type { APIRoute } from 'astro';
 import { FieldValue, Timestamp } from 'firebase-admin/firestore';
-import { db } from '~/lib/firebase';
-import { getSession } from '~/lib/auth';
-import { sendVerificationEmail } from '~/lib/email';
+import { db } from '../../../lib/firebase';
+import { getSession } from '../../../lib/auth';
+import { sendVerificationEmail } from '../../../lib/email';
 
 export const POST: APIRoute = async ({ request }) => {
   const user = await getSession(request);

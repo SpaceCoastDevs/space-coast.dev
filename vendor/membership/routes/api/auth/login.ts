@@ -1,7 +1,7 @@
 export const prerender = false;
 
 import type { APIRoute } from 'astro';
-import { getOAuthUrl } from '~/lib/discord';
+import { getOAuthUrl } from '../../../lib/discord';
 
 export const GET: APIRoute = async () => {
   const state = crypto.randomUUID();

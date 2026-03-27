@@ -2,9 +2,9 @@ export const prerender = false;
 
 import type { APIRoute } from 'astro';
 import { FieldValue } from 'firebase-admin/firestore';
-import { db } from '~/lib/firebase';
-import { exchangeCodeForToken, getDiscordUser, getAvatarUrl, isGuildMember } from '~/lib/discord';
-import { createSession, buildSessionCookies } from '~/lib/auth';
+import { db } from '../../../lib/firebase';
+import { exchangeCodeForToken, getDiscordUser, getAvatarUrl, isGuildMember } from '../../../lib/discord';
+import { createSession, buildSessionCookies } from '../../../lib/auth';
 
 function parseCookie(header: string | null, name: string): string | null {
   if (!header) return null;

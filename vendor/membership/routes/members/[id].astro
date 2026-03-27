@@ -4,8 +4,8 @@ export const prerender = false;
 import PageLayout from '~/layouts/PageLayout.astro';
 import { Icon } from 'astro-icon/components';
 import { marked } from 'marked';
-import { db } from '~/lib/firebase';
-import type { MemberProfile } from '~/lib/firebase';
+import { db } from '../../lib/firebase';
+import type { MemberProfile } from '../../lib/firebase';
 
 const { id } = Astro.params;
 

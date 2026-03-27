@@ -2,9 +2,9 @@
 export const prerender = false;
 
 import PageLayout from '~/layouts/PageLayout.astro';
-import MemberCard from '~/components/members/MemberCard.astro';
-import { db } from '~/lib/firebase';
-import type { MemberProfile } from '~/lib/firebase';
+import MemberCard from '../../components/MemberCard.astro';
+import { db } from '../../lib/firebase';
+import type { MemberProfile } from '../../lib/firebase';
 
 const error = Astro.url.searchParams.get('error');
 

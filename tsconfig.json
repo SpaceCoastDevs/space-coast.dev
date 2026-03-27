@@ -5,7 +5,9 @@
     "allowJs": true,
     "baseUrl": ".",
     "paths": {
-      "~/*": ["src/*"]
+      "~/*": ["src/*"],
+      "#membership": ["vendor/membership/index.ts"],
+      "#membership/*": ["vendor/membership/*"]
     }
   },
   "exclude": ["dist/"]

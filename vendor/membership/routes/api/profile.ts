@@ -2,9 +2,9 @@ export const prerender = false;
 
 import type { APIRoute } from 'astro';
 import { FieldValue } from 'firebase-admin/firestore';
-import { db } from '~/lib/firebase';
-import { getSession } from '~/lib/auth';
-import { notifyNewMember } from '~/lib/discord-notify';
+import { db } from '../../lib/firebase';
+import { getSession } from '../../lib/auth';
+import { notifyNewMember } from '../../lib/discord-notify';
 
 const ALLOWED_LOOKING_FOR = ['jobs', 'collaborators', 'mentors', 'mentees', 'open-source'];
 const MAX_SKILLS = 50;
