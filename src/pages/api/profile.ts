@@ -4,6 +4,7 @@ import type { APIRoute } from 'astro';
 import { FieldValue } from 'firebase-admin/firestore';
 import { db } from '~/lib/firebase';
 import { getSession } from '~/lib/auth';
+import { notifyNewMember } from '~/lib/discord-notify';
 
 const ALLOWED_LOOKING_FOR = ['jobs', 'collaborators', 'mentors', 'mentees', 'open-source'];
 const MAX_SKILLS = 50;
@@ -69,7 +70,24 @@ export const POST: APIRoute = async ({ request }) => {
     updatedAt: FieldValue.serverTimestamp(),
   };
 
-  await db.collection('members').doc(user.discordId).update(updates);
+  const docRef = db.collection('members').doc(user.discordId);
+  const existing = await docRef.get();
+  const wasPublic: boolean = existing.data()?.isPublic ?? false;
+
+  await docRef.update(updates);
+
+  // Notify Discord the first time a member makes their profile public
+  if (!wasPublic && updates.isPublic) {
+    const d = existing.data() ?? {};
+    notifyNewMember({
+      discordId: user.discordId,
+      displayName: updates.displayName,
+      avatarUrl: user.avatarUrl,
+      bio: updates.bio || d.bio,
+      location: updates.location || d.location,
+      skills: updates.skills.length ? updates.skills : d.skills,
+    });
+  }
 
   return new Response(null, {
     status: 302,
