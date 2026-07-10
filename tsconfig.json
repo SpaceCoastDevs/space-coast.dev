@@ -5,7 +5,16 @@
     "allowJs": true,
     "baseUrl": ".",
     "paths": {
-      "~/*": ["src/*"]
+      "~/*": ["src/*"],
+      "#membership": [
+        "node_modules/astro-discord-membership/index.ts"
+      ],
+      "#membership/*": [
+        "node_modules/astro-discord-membership/*"
+      ],
+      "astro-discord-membership:config": [
+        "node_modules/astro-discord-membership/types.d.ts"
+      ]
     }
   },
   "exclude": ["dist/"]

@@ -13,6 +13,7 @@ import compress from 'astro-compress';
 import type { AstroIntegration } from 'astro';
 
 import astrowind from './vendor/integration';
+import membership from 'astro-discord-membership';
 
 import { readingTimeRemarkPlugin, responsiveTablesRehypePlugin, lazyImagesRehypePlugin } from './src/utils/frontmatter';
 
@@ -70,6 +71,11 @@ export default defineConfig({
 
     astrowind({
       config: './src/config.yaml',
+    }),
+
+    membership({
+      communityName: 'Space Coast Devs',
+      siteUrl: 'https://space-coast.dev',
     }),
   ],
 
