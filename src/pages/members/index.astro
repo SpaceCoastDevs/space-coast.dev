@@ -97,15 +97,20 @@ members.sort((a, b) => a.displayName.localeCompare(b.displayName));
 </PageLayout>
 
 <script>
-  const search = document.getElementById('member-search') as HTMLInputElement | null;
-  const grid = document.getElementById('member-grid');
-  if (search && grid) {
+  function initMemberSearch() {
+    const search = document.getElementById('member-search') as HTMLInputElement | null;
+    const grid = document.getElementById('member-grid');
+    if (!search || !grid || search.dataset.bound) return;
+
+    search.dataset.bound = 'true';
     search.addEventListener('input', () => {
       const q = search.value.toLowerCase().trim();
       grid.querySelectorAll<HTMLAnchorElement>('a[href^="/members/"]').forEach((card) => {
-        const text = card.textContent?.toLowerCase() ?? '';
-        card.style.display = !q || text.includes(q) ? '' : 'none';
+        card.style.display = !q || card.dataset.search?.includes(q) ? '' : 'none';
       });
     });
   }
+
+  initMemberSearch();
+  document.addEventListener('astro:page-load', initMemberSearch);
 </script>
