@@ -5,6 +5,11 @@ on:
     # Runs 3 days before month start window (UTC)
     - cron: "0 15 28-30 * *"
   workflow_dispatch:
+    inputs:
+      target_month:
+        description: 'Month to generate, in YYYY-MM format (defaults to next month)'
+        required: false
+        type: string
 
 permissions:
   contents: write
@@ -41,8 +46,16 @@ jobs:
 
       - name: Compute target month
         run: |
-          echo "TARGET_MONTH=$(date -u -d '+1 month' +%Y-%m)" >> $GITHUB_ENV
-          echo "TARGET_FILE=src/content/post/space-coast-tech-events-$(date -u -d '+1 month' +%Y-%m).mdx" >> $GITHUB_ENV
+          TARGET_MONTH="${{ inputs.target_month }}"
+          if [ -z "$TARGET_MONTH" ]; then
+            TARGET_MONTH="$(date -u -d '+1 month' +%Y-%m)"
+          fi
+          if ! [[ "$TARGET_MONTH" =~ ^[0-9]{4}-(0[1-9]|1[0-2])$ ]]; then
+            echo "target_month must use YYYY-MM format" >&2
+            exit 1
+          fi
+          echo "TARGET_MONTH=$TARGET_MONTH" >> $GITHUB_ENV
+          echo "TARGET_FILE=src/content/post/space-coast-tech-events-$TARGET_MONTH.mdx" >> $GITHUB_ENV
 
       - name: Generate markdown into site repo
         run: |
