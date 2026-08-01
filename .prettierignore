@@ -3,3 +3,6 @@ node_modules
 .github
 .changeset
 .netlify
+
+# Package-manager generated lockfiles
+pnpm-lock.yaml
