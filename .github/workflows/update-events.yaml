@@ -1,0 +1,61 @@
+name: Update Space Coast Events
+
+on:
+  schedule:
+    # Runs 3 days before month start window (UTC)
+    - cron: "0 15 28-30 * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  generate-events:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout site repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Checkout EvntHndlr tool
+        uses: actions/checkout@v4
+        with:
+          repository: SpaceCoastDevs/EvntHndlr
+          path: tools/evnthndlr
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: tools/evnthndlr/package-lock.json
+
+      - name: Install and build tool
+        run: |
+          cd tools/evnthndlr
+          npm ci
+          npm run build
+
+      - name: Compute target month
+        run: |
+          echo "TARGET_MONTH=$(date -u -d '+1 month' +%Y-%m)" >> $GITHUB_ENV
+          echo "TARGET_FILE=src/content/post/space-coast-tech-events-$(date -u -d '+1 month' +%Y-%m).mdx" >> $GITHUB_ENV
+
+      - name: Generate markdown into site repo
+        run: |
+          node tools/evnthndlr/dist/generate.js --month="${TARGET_MONTH}" --file="${TARGET_FILE}"
+
+      - name: Create or update PR
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ github.token }}
+          commit-message: "Update events for ${{ env.TARGET_MONTH }}"
+          title: "Update Space Coast Tech Events for ${{ env.TARGET_MONTH }}"
+          body: |
+            Automated monthly event content refresh.
+            Target month: ${{ env.TARGET_MONTH }}
+          branch: "automation/events-${{ env.TARGET_MONTH }}"
+          delete-branch: true
