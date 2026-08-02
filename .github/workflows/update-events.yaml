@@ -2,12 +2,12 @@ name: Update Space Coast Events
 
 on:
   schedule:
-    # Runs 3 days before month start window (UTC)
-    - cron: "0 15 28-30 * *"
+    # Every Monday at 15:00 UTC (11:00 EDT / 10:00 EST).
+    - cron: "0 15 * * 1"
   workflow_dispatch:
     inputs:
       target_month:
-        description: 'Month to generate, in YYYY-MM format (defaults to next month)'
+        description: 'Month to refresh, in YYYY-MM format (defaults to the current month)'
         required: false
         type: string
 
@@ -49,41 +49,37 @@ jobs:
           corepack enable
           pnpm install --frozen-lockfile
 
-      - name: Compute target month
+      - name: Compute target months
         run: |
           TARGET_MONTH="${{ inputs.target_month }}"
           if [ -z "$TARGET_MONTH" ]; then
-            TARGET_MONTH="$(date -u -d '+1 month' +%Y-%m)"
+            TARGET_MONTH="$(date -u +%Y-%m)"
           fi
           if ! [[ "$TARGET_MONTH" =~ ^[0-9]{4}-(0[1-9]|1[0-2])$ ]]; then
             echo "target_month must use YYYY-MM format" >&2
             exit 1
           fi
-          TARGET_DATE="${TARGET_MONTH}-01"
-          TARGET_YEAR="${TARGET_MONTH%-*}"
-          TARGET_MONTH_NAME="$(date -u -d "$TARGET_DATE" +%B | tr '[:upper:]' '[:lower:]')"
+          NEXT_MONTH="$(date -u -d "${TARGET_MONTH}-01 +1 month" +%Y-%m)"
           echo "TARGET_MONTH=$TARGET_MONTH" >> $GITHUB_ENV
-          echo "TARGET_FILE=src/content/post/$TARGET_DATE-space-coast-tech-events-$TARGET_MONTH_NAME-$TARGET_YEAR.mdx" >> $GITHUB_ENV
+          echo "NEXT_MONTH=$NEXT_MONTH" >> $GITHUB_ENV
           echo "EVENTS_DIR=src/content/event" >> $GITHUB_ENV
 
-      - name: Generate markdown into site repo
+      - name: Refresh structured event records
         run: |
-          node tools/evnthndlr/dist/generate.js --month="${TARGET_MONTH}" --file="${TARGET_FILE}" --event-dir="${EVENTS_DIR}"
-          # Meetup page titles can append the platform owner to the parsed time.
-          sed -i -E 's/(\*\*Time:\*\*.*) Bending Spoons$/\1/' "$TARGET_FILE"
-          pnpm exec prettier --write "$TARGET_FILE" "$EVENTS_DIR"
+          node tools/evnthndlr/dist/generate.js --month="${TARGET_MONTH}" --event-dir="${EVENTS_DIR}" --no-markdown
+          node tools/evnthndlr/dist/generate.js --month="${NEXT_MONTH}" --event-dir="${EVENTS_DIR}" --no-markdown
+          pnpm exec prettier --write "$EVENTS_DIR"
 
       - name: Create or update PR
         uses: peter-evans/create-pull-request@v7
         with:
           token: ${{ github.token }}
           add-paths: |
-            ${{ env.TARGET_FILE }}
             ${{ env.EVENTS_DIR }}/**
-          commit-message: "Update events for ${{ env.TARGET_MONTH }}"
-          title: "Update Space Coast Tech Events for ${{ env.TARGET_MONTH }}"
+          commit-message: "Update event records for ${{ env.TARGET_MONTH }}"
+          title: "Update Space Coast event records for ${{ env.TARGET_MONTH }}"
           body: |
-            Automated monthly event content refresh.
-            Target month: ${{ env.TARGET_MONTH }}
+            Automated weekly event record refresh.
+            Refreshed months: ${{ env.TARGET_MONTH }} and ${{ env.NEXT_MONTH }}.
           branch: "automation/events-${{ env.TARGET_MONTH }}"
           delete-branch: true
