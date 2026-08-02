@@ -135,6 +135,8 @@ const subscriptionUrl = new URL('/events/events.ics', Astro.site).toString().rep
           upcomingEvents.length ? (
             upcomingEvents.map((event) => (
               <article
+                id={`event-${event.data.slug}`}
+                tabindex="-1"
                 class:list={[
                   'rounded-lg border p-5',
                   isSpaceCoastDevsEvent(event)
@@ -186,7 +188,11 @@ const subscriptionUrl = new URL('/events/events.ics', Astro.site).toString().rep
         {
           pastEvents.length ? (
             pastEvents.reverse().map((event) => (
-              <article class="rounded-lg border border-gray-200 p-5 dark:border-slate-700">
+              <article
+                id={`event-${event.data.slug}`}
+                tabindex="-1"
+                class="rounded-lg border border-gray-200 p-5 dark:border-slate-700"
+              >
                 <time class="text-lg font-bold text-muted dark:text-slate-400" datetime={event.data.start}>
                   {dateFormatter.format(new Date(event.data.start))}
                 </time>
@@ -210,6 +216,17 @@ const subscriptionUrl = new URL('/events/events.ics', Astro.site).toString().rep
   </section>
 
   <script is:inline>
+    const showEventFromHash = () => {
+      const eventCard = document.getElementById(window.location.hash.slice(1));
+      if (!eventCard) return;
+
+      const panel = eventCard.closest('[data-events-panel]');
+      const tab = document.querySelector(`[data-events-tab="${panel?.dataset.eventsPanel}"]`);
+      if (tab instanceof HTMLButtonElement) tab.click();
+      eventCard.scrollIntoView({ block: 'center' });
+      eventCard.focus({ preventScroll: true });
+    };
+
     document.querySelectorAll('[data-events-tab]').forEach((tab) => {
       tab.addEventListener('click', () => {
         const selected = tab.dataset.eventsTab;
@@ -224,5 +241,7 @@ const subscriptionUrl = new URL('/events/events.ics', Astro.site).toString().rep
         });
       });
     });
+
+    showEventFromHash();
   </script>
 </PageLayout>
