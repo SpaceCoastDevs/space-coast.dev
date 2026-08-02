@@ -29,7 +29,6 @@ const formatter = new Intl.DateTimeFormat('en-US', {
   timeZoneName: 'short',
 });
 const eventDate = data.start.slice(0, 10);
-const eventUrl = new URL(`/events/${eventDate}/${data.slug}`, Astro.site);
 const eventSchema = {
   '@context': 'https://schema.org',
   '@type': 'Event',
@@ -39,7 +38,7 @@ const eventSchema = {
   ...(data.end ? { endDate: data.end } : {}),
   eventAttendanceMode: `https://schema.org/${data.attendanceMode === 'online' ? 'OnlineEventAttendanceMode' : data.attendanceMode === 'mixed' ? 'MixedEventAttendanceMode' : 'OfflineEventAttendanceMode'}`,
   eventStatus: 'https://schema.org/EventScheduled',
-  url: eventUrl.toString(),
+  url: data.sourceUrl,
   organizer: { '@type': 'Organization', name: data.organizer.name, url: data.organizer.url },
   ...(data.location
     ? {
@@ -60,7 +59,7 @@ const eventSchema = {
 const eventSchemaJson = JSON.stringify(eventSchema).replace(/</g, '\\u003c');
 ---
 
-<PageLayout metadata={{ title: data.title, description: data.description }}>
+<PageLayout metadata={{ title: data.title, description: data.description, canonical: data.sourceUrl }}>
   <Fragment slot="head">
     <script is:inline type="application/ld+json" set:html={eventSchemaJson} />
   </Fragment>
