@@ -59,12 +59,17 @@ jobs:
             echo "target_month must use YYYY-MM format" >&2
             exit 1
           fi
+          TARGET_DATE="${TARGET_MONTH}-01"
+          TARGET_YEAR="${TARGET_MONTH%-*}"
+          TARGET_MONTH_NAME="$(date -u -d "$TARGET_DATE" +%B | tr '[:upper:]' '[:lower:]')"
           echo "TARGET_MONTH=$TARGET_MONTH" >> $GITHUB_ENV
-          echo "TARGET_FILE=src/content/post/space-coast-tech-events-$TARGET_MONTH.mdx" >> $GITHUB_ENV
+          echo "TARGET_FILE=src/content/post/$TARGET_DATE-space-coast-tech-events-$TARGET_MONTH_NAME-$TARGET_YEAR.mdx" >> $GITHUB_ENV
 
       - name: Generate markdown into site repo
         run: |
           node tools/evnthndlr/dist/generate.js --month="${TARGET_MONTH}" --file="${TARGET_FILE}"
+          # Meetup page titles can append the platform owner to the parsed time.
+          sed -i -E 's/(\*\*Time:\*\*.*) Bending Spoons$/\1/' "$TARGET_FILE"
           pnpm exec prettier --write "$TARGET_FILE"
 
       - name: Create or update PR
