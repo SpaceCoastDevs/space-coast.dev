@@ -47,6 +47,7 @@ const getNormalizedPost = async (post: CollectionEntry<'post'>): Promise<Post> =
   const {
     publishDate: rawPublishDate = new Date(),
     updateDate: rawUpdateDate,
+    permalink: rawPermalink,
     title,
     excerpt,
     image,
@@ -76,7 +77,9 @@ const getNormalizedPost = async (post: CollectionEntry<'post'>): Promise<Post> =
   return {
     id: id,
     slug: slug,
-    permalink: await generatePermalink({ id, slug, publishDate, category: category?.slug }),
+    permalink: rawPermalink
+      ? cleanSlug(rawPermalink)
+      : await generatePermalink({ id, slug, publishDate, category: category?.slug }),
 
     publishDate: publishDate,
     updateDate: updateDate,
