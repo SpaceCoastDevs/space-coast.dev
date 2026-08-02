@@ -68,6 +68,7 @@ jobs:
         run: |
           node tools/evnthndlr/dist/generate.js --month="${TARGET_MONTH}" --event-dir="${EVENTS_DIR}" --no-markdown
           node tools/evnthndlr/dist/generate.js --month="${NEXT_MONTH}" --event-dir="${EVENTS_DIR}" --no-markdown
+          pnpm run generate:event-images
           pnpm exec prettier --write "$EVENTS_DIR"
 
       - name: Create or update PR
@@ -76,6 +77,7 @@ jobs:
           token: ${{ github.token }}
           add-paths: |
             ${{ env.EVENTS_DIR }}/**
+            public/event-images/**
           commit-message: "Update event records for ${{ env.TARGET_MONTH }}"
           title: "Update Space Coast event records for ${{ env.TARGET_MONTH }}"
           body: |

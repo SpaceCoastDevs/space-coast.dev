@@ -25,6 +25,34 @@ const { post } = Astro.props as Props;
 
 const url = getCanonical(getPermalink(post.permalink, 'post'));
 const image = (await findImage(post.image)) as ImageMetadata | string | undefined;
+const imageUrl =
+  typeof image === 'string'
+    ? String(new URL(image, Astro.site))
+    : image
+      ? String(new URL(image.src, Astro.site))
+      : undefined;
+const articleSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: post.title,
+  description: post.excerpt,
+  url: String(url),
+  mainEntityOfPage: String(url),
+  datePublished: post.publishDate.toISOString(),
+  ...(post.updateDate ? { dateModified: post.updateDate.toISOString() } : {}),
+  ...(imageUrl ? { image: imageUrl } : {}),
+  author: {
+    '@type': 'Organization',
+    name: post.author || 'Space Coast Devs',
+    url: 'https://space-coast.dev',
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: 'Space Coast Devs',
+    url: 'https://space-coast.dev',
+  },
+};
+const articleSchemaJson = JSON.stringify(articleSchema).replace(/</g, '\\u003c');
 
 const metadata = merge(
   {
@@ -46,6 +74,9 @@ const metadata = merge(
 ---
 
 <Layout metadata={metadata}>
+  <Fragment slot="head">
+    <script is:inline type="application/ld+json" set:html={articleSchemaJson} />
+  </Fragment>
   <SinglePost post={{ ...post, image: image }} url={url}>
     {post.Content ? <post.Content /> : <Fragment set:html={post.content || ''} />}
   </SinglePost>

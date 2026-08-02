@@ -71,6 +71,17 @@ export const adaptOpenGraphImages = async (
           };
         }
 
+        // Local Astro assets already have an optimized, immutable URL. Reuse
+        // that source for social cards instead of sending unfurlers through a
+        // runtime Netlify image transformation.
+        if (typeof resolvedImage === 'object' && 'src' in resolvedImage) {
+          return {
+            url: String(new URL(resolvedImage.src, astroSite)),
+            width: image?.width || resolvedImage.width,
+            height: image?.height || resolvedImage.height,
+          };
+        }
+
         const _image = await getImage({
           src: resolvedImage,
           alt: 'Placeholder alt',
