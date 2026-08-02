@@ -44,6 +44,11 @@ jobs:
           npm ci
           npm run build
 
+      - name: Install site dependencies
+        run: |
+          corepack enable
+          pnpm install --frozen-lockfile
+
       - name: Compute target month
         run: |
           TARGET_MONTH="${{ inputs.target_month }}"
@@ -60,11 +65,13 @@ jobs:
       - name: Generate markdown into site repo
         run: |
           node tools/evnthndlr/dist/generate.js --month="${TARGET_MONTH}" --file="${TARGET_FILE}"
+          pnpm exec prettier --write "$TARGET_FILE"
 
       - name: Create or update PR
         uses: peter-evans/create-pull-request@v7
         with:
           token: ${{ github.token }}
+          add-paths: ${{ env.TARGET_FILE }}
           commit-message: "Update events for ${{ env.TARGET_MONTH }}"
           title: "Update Space Coast Tech Events for ${{ env.TARGET_MONTH }}"
           body: |
