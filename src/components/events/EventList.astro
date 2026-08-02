@@ -1,0 +1,40 @@
+---
+import { getEventsForMonth, getEventPermalink } from '~/utils/events';
+
+interface Props {
+  month: string;
+}
+
+const { month } = Astro.props;
+const events = await getEventsForMonth(month);
+const formatter = new Intl.DateTimeFormat('en-US', {
+  weekday: 'short',
+  month: 'short',
+  day: 'numeric',
+  hour: 'numeric',
+  minute: '2-digit',
+  timeZone: 'America/New_York',
+});
+---
+
+<div class="not-prose my-8 space-y-4">
+  {
+    events.map((event) => (
+      <article class="rounded-lg border border-gray-200 p-5 dark:border-slate-700">
+        <p class="text-sm text-muted dark:text-slate-400">{formatter.format(new Date(event.data.start))}</p>
+        <h2 class="mt-1 text-xl font-semibold">
+          <a class="hover:text-primary" href={getEventPermalink(event)}>
+            {event.data.title}
+          </a>
+        </h2>
+        <p class="mt-2 text-sm text-muted dark:text-slate-400">
+          {event.data.organizer.name}
+          {event.data.location ? ` · ${event.data.location.name}` : ''}
+        </p>
+        <a class="mt-3 inline-block text-sm font-medium text-primary hover:underline" href={getEventPermalink(event)}>
+          Event details and calendar download →
+        </a>
+      </article>
+    ))
+  }
+</div>
