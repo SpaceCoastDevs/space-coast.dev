@@ -1,0 +1,13 @@
+import { getCollection, type CollectionEntry } from 'astro:content';
+
+export type Event = CollectionEntry<'event'>;
+
+export const getEventPermalink = (event: Event) => `/events/${event.data.slug}`;
+
+export const getEventsForMonth = async (month: string): Promise<Event[]> =>
+  (await getCollection('event'))
+    .filter((event) => event.data.start.startsWith(month))
+    .sort((a, b) => a.data.start.localeCompare(b.data.start));
+
+export const getAllEvents = async (): Promise<Event[]> =>
+  (await getCollection('event')).sort((a, b) => a.data.start.localeCompare(b.data.start));
