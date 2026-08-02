@@ -1,0 +1,79 @@
+name: Announce Weekly Events Post
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'src/content/post/*-weekly-space-coast-tech-events.mdx'
+  workflow_dispatch:
+    inputs:
+      post_date:
+        description: 'Post date to announce, in YYYY-MM-DD format'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  announce:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout site
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Find weekly post
+        id: post
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          POST_DATE: ${{ inputs.post_date }}
+          BEFORE_SHA: ${{ github.event.before }}
+          AFTER_SHA: ${{ github.sha }}
+        run: |
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            if ! [[ "$POST_DATE" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]; then
+              echo "post_date must use YYYY-MM-DD format" >&2
+              exit 1
+            fi
+            POST_FILE="src/content/post/${POST_DATE}-weekly-space-coast-tech-events.mdx"
+          else
+            POST_FILE="$(git diff --name-only --diff-filter=A "$BEFORE_SHA" "$AFTER_SHA" -- 'src/content/post/*-weekly-space-coast-tech-events.mdx' | sort | tail -n 1)"
+          fi
+
+          if [ -z "$POST_FILE" ] || [ ! -f "$POST_FILE" ]; then
+            echo "No weekly event post found to announce." >&2
+            exit 1
+          fi
+
+          POST_DATE="$(basename "$POST_FILE" | sed -E 's/^([0-9]{4}-[0-9]{2}-[0-9]{2})-.*/\1/')"
+          echo "url=https://space-coast.dev/posts/${POST_DATE}/weekly-space-coast-tech-events" >> "$GITHUB_OUTPUT"
+
+      - name: Post to Discord local events channel
+        env:
+          DISCORD_LOCAL_EVENTS_WEBHOOK_URL: ${{ secrets.DISCORD_LOCAL_EVENTS_WEBHOOK_URL }}
+          POST_URL: ${{ steps.post.outputs.url }}
+        run: |
+          if [ -z "$DISCORD_LOCAL_EVENTS_WEBHOOK_URL" ]; then
+            echo "DISCORD_LOCAL_EVENTS_WEBHOOK_URL is not configured." >&2
+            exit 1
+          fi
+
+          payload="$(jq -nc --arg url "$POST_URL" '{
+            content: "📅 **This week’s Space Coast tech events are live!**\n\($url)",
+            embeds: [{
+              title: "Weekly Space Coast Tech Events",
+              url: $url,
+              description: "Browse local events, see details, and add them to your calendar.",
+              color: 6225920
+            }]
+          }')"
+
+          curl --fail-with-body --silent --show-error \
+            -X POST \
+            -H 'Content-Type: application/json' \
+            --data "$payload" \
+            "$DISCORD_LOCAL_EVENTS_WEBHOOK_URL"
