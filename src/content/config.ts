@@ -92,6 +92,7 @@ const eventCollection = defineCollection({
       .object({
         type: z.enum(['free', 'paid']),
         amount: z.number().nonnegative().optional(),
+        maximumAmount: z.number().nonnegative().optional(),
         currency: z.string().length(3).optional(),
       })
       .optional(),

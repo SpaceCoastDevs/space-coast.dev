@@ -17,11 +17,16 @@ export const getEventCostLabel = (event: Event) => {
   if (cost.type === 'free') return 'Free';
   if (typeof cost.amount !== 'number') return 'Paid';
 
-  return new Intl.NumberFormat('en-US', {
+  const formatter = new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: cost.currency || 'USD',
     maximumFractionDigits: 2,
-  }).format(cost.amount);
+  });
+  const minimum = formatter.format(cost.amount);
+
+  return typeof cost.maximumAmount === 'number' && cost.maximumAmount > cost.amount
+    ? `${minimum}–${formatter.format(cost.maximumAmount)}`
+    : minimum;
 };
 
 export const getEventsForMonth = async (month: string): Promise<Event[]> =>
