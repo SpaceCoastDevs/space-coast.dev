@@ -118,7 +118,8 @@ const subscriptionUrl = new URL('/events/events.ics', Astro.site).toString().rep
           role="tab"
           aria-selected="true"
           aria-controls="upcoming-events"
-          data-events-tab="upcoming">Upcoming events</button
+          data-events-tab="upcoming"
+          type="button">Upcoming events</button
         >
         <button
           class="rounded-r-md border border-gray-300 px-4 py-2 font-medium dark:border-slate-600"
@@ -126,7 +127,8 @@ const subscriptionUrl = new URL('/events/events.ics', Astro.site).toString().rep
           role="tab"
           aria-selected="false"
           aria-controls="past-events"
-          data-events-tab="past">Past events</button
+          data-events-tab="past"
+          type="button">Past events</button
         >
       </div>
 
@@ -259,32 +261,43 @@ const subscriptionUrl = new URL('/events/events.ics', Astro.site).toString().rep
   </section>
 
   <script is:inline>
+    const selectEventsTab = (selected) => {
+      if (selected !== 'upcoming' && selected !== 'past') return;
+
+      document.querySelectorAll('[data-events-tab]').forEach((item) => {
+        const active = item.dataset.eventsTab === selected;
+        item.setAttribute('aria-selected', String(active));
+        item.classList.toggle('bg-primary', active);
+        item.classList.toggle('text-white', active);
+      });
+      document.querySelectorAll('[data-events-panel]').forEach((panel) => {
+        panel.toggleAttribute('hidden', panel.dataset.eventsPanel !== selected);
+      });
+    };
+
     const showEventFromHash = () => {
       const eventCard = document.getElementById(window.location.hash.slice(1));
       if (!eventCard) return;
 
       const panel = eventCard.closest('[data-events-panel]');
-      const tab = document.querySelector(`[data-events-tab="${panel?.dataset.eventsPanel}"]`);
-      if (tab instanceof HTMLButtonElement) tab.click();
+      selectEventsTab(panel?.dataset.eventsPanel);
       eventCard.scrollIntoView({ block: 'center' });
       eventCard.focus({ preventScroll: true });
     };
 
-    document.querySelectorAll('[data-events-tab]').forEach((tab) => {
-      tab.addEventListener('click', () => {
-        const selected = tab.dataset.eventsTab;
-        document.querySelectorAll('[data-events-tab]').forEach((item) => {
-          const active = item.dataset.eventsTab === selected;
-          item.setAttribute('aria-selected', String(active));
-          item.classList.toggle('bg-primary', active);
-          item.classList.toggle('text-white', active);
-        });
-        document.querySelectorAll('[data-events-panel]').forEach((panel) => {
-          panel.toggleAttribute('hidden', panel.dataset.eventsPanel !== selected);
-        });
-      });
-    });
+    if (!window.__eventsTabClickHandler) {
+      window.__eventsTabClickHandler = (event) => {
+        const target = event.target;
+        if (!(target instanceof Element)) return;
+
+        const tab = target.closest('[data-events-tab]');
+        if (!(tab instanceof HTMLButtonElement)) return;
+        selectEventsTab(tab.dataset.eventsTab);
+      };
+      document.addEventListener('click', window.__eventsTabClickHandler);
+    }
 
     showEventFromHash();
+    document.addEventListener('astro:after-swap', showEventFromHash);
   </script>
 </PageLayout>
