@@ -3,7 +3,35 @@ import PageLayout from '~/layouts/PageLayout.astro';
 import { getAllEvents, getEventPermalink } from '~/utils/events';
 
 const events = await getAllEvents();
-const formatter = new Intl.DateTimeFormat('en-US', {
+const easternDate = (date: Date): string => {
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'America/New_York',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(date);
+  const part = (type: Intl.DateTimeFormatPartTypes) => parts.find((item) => item.type === type)?.value;
+  return `${part('year')}-${part('month')}-${part('day')}`;
+};
+const now = new Date();
+const today = easternDate(now);
+const upcomingEvents = events.filter((event) => new Date(event.data.start) >= now);
+const pastEvents = events.filter((event) => new Date(event.data.start) < now);
+const currentMonth = today.slice(0, 7);
+const calendarEvents = upcomingEvents.filter((event) => event.data.start.slice(0, 7) === currentMonth);
+const [year, month] = currentMonth.split('-').map(Number);
+const firstDay = new Date(Date.UTC(year, month - 1, 1));
+const monthLabelDate = new Date(Date.UTC(year, month - 1, 1, 12));
+const monthEnd = new Date(Date.UTC(year, month, 0));
+const calendarDays = Array.from({ length: firstDay.getUTCDay() + monthEnd.getUTCDate() }, (_, index) =>
+  index < firstDay.getUTCDay() ? undefined : index - firstDay.getUTCDay() + 1
+);
+const monthFormatter = new Intl.DateTimeFormat('en-US', {
+  month: 'long',
+  year: 'numeric',
+  timeZone: 'America/New_York',
+});
+const dateFormatter = new Intl.DateTimeFormat('en-US', {
   weekday: 'short',
   month: 'short',
   day: 'numeric',
@@ -12,6 +40,12 @@ const formatter = new Intl.DateTimeFormat('en-US', {
   minute: '2-digit',
   timeZone: 'America/New_York',
 });
+const timeFormatter = new Intl.DateTimeFormat('en-US', {
+  hour: 'numeric',
+  minute: '2-digit',
+  timeZone: 'America/New_York',
+});
+const subscriptionUrl = new URL('/events/events.ics', Astro.site).toString().replace(/^https?/, 'webcal');
 ---
 
 <PageLayout
@@ -21,35 +55,157 @@ const formatter = new Intl.DateTimeFormat('en-US', {
   }}
 >
   <section class="py-12 md:py-20">
-    <div class="mx-auto max-w-5xl px-4 sm:px-6">
+    <div class="mx-auto max-w-6xl px-4 sm:px-6">
       <h1 class="text-4xl font-bold tracking-tight">Space Coast Tech Events</h1>
       <p class="mt-4 max-w-3xl text-lg text-muted dark:text-slate-400">
-        Browse local technology events and open each event for its full details, source link, and calendar download.
+        Browse local technology events, add individual events to your calendar, or subscribe to the complete event feed.
       </p>
-      <div class="mt-10 space-y-4">
+      <div class="mt-6 flex flex-wrap gap-3">
+        <a class="btn-primary" href="/events/events.ics">Download all events</a>
+        <a class="btn-secondary" href={subscriptionUrl}>Subscribe to calendar</a>
+      </div>
+
+      <section class="mt-12" aria-labelledby="calendar-heading">
+        <h2 id="calendar-heading" class="text-2xl font-bold">{monthFormatter.format(monthLabelDate)} calendar</h2>
+        <div class="mt-4 overflow-x-auto rounded-lg border border-gray-200 dark:border-slate-700">
+          <div
+            class="grid min-w-[700px] grid-cols-7 border-b border-gray-200 bg-gray-50 text-center text-sm font-semibold dark:border-slate-700 dark:bg-slate-800"
+          >
+            {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => <div class="p-3">{day}</div>)}
+          </div>
+          <div class="grid min-w-[700px] grid-cols-7">
+            {
+              calendarDays.map((day) => {
+                const date = day ? `${currentMonth}-${String(day).padStart(2, '0')}` : '';
+                const dayEvents = calendarEvents.filter((event) => event.data.start.slice(0, 10) === date);
+                return (
+                  <div class="min-h-32 border-b border-r border-gray-200 p-2 dark:border-slate-700">
+                    {day && <p class="text-sm font-semibold">{day}</p>}
+                    <div class="mt-1 space-y-1">
+                      {dayEvents.map((event) => (
+                        <a
+                          class="block rounded bg-blue-50 px-2 py-1 text-xs text-primary hover:underline dark:bg-slate-800"
+                          href={getEventPermalink(event)}
+                        >
+                          <span class="font-semibold">{timeFormatter.format(new Date(event.data.start))}</span>{' '}
+                          {event.data.title}
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })
+            }
+          </div>
+        </div>
+      </section>
+
+      <div class="mt-12" role="tablist" aria-label="Event status">
+        <button
+          class="rounded-l-md bg-primary px-4 py-2 font-medium text-white"
+          id="upcoming-tab"
+          role="tab"
+          aria-selected="true"
+          aria-controls="upcoming-events"
+          data-events-tab="upcoming">Upcoming events</button
+        >
+        <button
+          class="rounded-r-md border border-gray-300 px-4 py-2 font-medium dark:border-slate-600"
+          id="past-tab"
+          role="tab"
+          aria-selected="false"
+          aria-controls="past-events"
+          data-events-tab="past">Past events</button
+        >
+      </div>
+
+      <div
+        class="mt-6 space-y-4"
+        id="upcoming-events"
+        role="tabpanel"
+        aria-labelledby="upcoming-tab"
+        data-events-panel="upcoming"
+      >
         {
-          events.map((event) => (
-            <article class="rounded-lg border border-gray-200 p-5 dark:border-slate-700">
-              <p class="text-sm text-muted dark:text-slate-400">{formatter.format(new Date(event.data.start))}</p>
-              <h2 class="mt-1 text-xl font-semibold">
-                <a class="hover:text-primary" href={getEventPermalink(event)}>
-                  {event.data.title}
-                </a>
-              </h2>
-              <p class="mt-2 text-sm text-muted dark:text-slate-400">
-                {event.data.organizer.name}
-                {event.data.location ? ` · ${event.data.location.name}` : ''}
-              </p>
-              <a
-                class="mt-3 inline-block text-sm font-medium text-primary hover:underline"
-                href={getEventPermalink(event)}
-              >
-                View details & add to calendar →
-              </a>
-            </article>
-          ))
+          upcomingEvents.length ? (
+            upcomingEvents.map((event) => (
+              <article class="rounded-lg border border-gray-200 p-5 dark:border-slate-700">
+                <time class="text-lg font-bold text-primary" datetime={event.data.start}>
+                  {dateFormatter.format(new Date(event.data.start))}
+                </time>
+                <h2 class="mt-2 text-xl font-semibold">
+                  <a class="hover:text-primary" href={getEventPermalink(event)}>
+                    {event.data.title}
+                  </a>
+                </h2>
+                <p class="mt-2 text-sm text-muted dark:text-slate-400">
+                  {event.data.organizer.name}
+                  {event.data.location ? ` · ${event.data.location.name}` : ''}
+                </p>
+                <div class="mt-4 flex flex-wrap gap-3">
+                  <a class="btn-secondary" href={getEventPermalink(event)}>
+                    See details
+                  </a>
+                  <a class="btn-primary" href={`/events/${event.data.slug}.ics`}>
+                    Add to calendar
+                  </a>
+                </div>
+              </article>
+            ))
+          ) : (
+            <p class="text-muted dark:text-slate-400">No upcoming events are listed yet.</p>
+          )
+        }
+      </div>
+
+      <div
+        class="mt-6 space-y-4"
+        id="past-events"
+        role="tabpanel"
+        aria-labelledby="past-tab"
+        data-events-panel="past"
+        hidden
+      >
+        {
+          pastEvents.length ? (
+            pastEvents.reverse().map((event) => (
+              <article class="rounded-lg border border-gray-200 p-5 dark:border-slate-700">
+                <time class="text-lg font-bold text-muted dark:text-slate-400" datetime={event.data.start}>
+                  {dateFormatter.format(new Date(event.data.start))}
+                </time>
+                <h2 class="mt-2 text-xl font-semibold">
+                  <a class="hover:text-primary" href={getEventPermalink(event)}>
+                    {event.data.title}
+                  </a>
+                </h2>
+                <p class="mt-2 text-sm text-muted dark:text-slate-400">
+                  {event.data.organizer.name}
+                  {event.data.location ? ` · ${event.data.location.name}` : ''}
+                </p>
+              </article>
+            ))
+          ) : (
+            <p class="text-muted dark:text-slate-400">No past events are available.</p>
+          )
         }
       </div>
     </div>
   </section>
+
+  <script is:inline>
+    document.querySelectorAll('[data-events-tab]').forEach((tab) => {
+      tab.addEventListener('click', () => {
+        const selected = tab.dataset.eventsTab;
+        document.querySelectorAll('[data-events-tab]').forEach((item) => {
+          const active = item.dataset.eventsTab === selected;
+          item.setAttribute('aria-selected', String(active));
+          item.classList.toggle('bg-primary', active);
+          item.classList.toggle('text-white', active);
+        });
+        document.querySelectorAll('[data-events-panel]').forEach((panel) => {
+          panel.toggleAttribute('hidden', panel.dataset.eventsPanel !== selected);
+        });
+      });
+    });
+  </script>
 </PageLayout>
