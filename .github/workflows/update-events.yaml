@@ -59,19 +59,25 @@ jobs:
             echo "target_month must use YYYY-MM format" >&2
             exit 1
           fi
+          TARGET_DATE="${TARGET_MONTH}-01"
+          TARGET_YEAR="${TARGET_MONTH%-*}"
+          TARGET_MONTH_NAME="$(date -u -d "$TARGET_DATE" +%B | tr '[:upper:]' '[:lower:]')"
           echo "TARGET_MONTH=$TARGET_MONTH" >> $GITHUB_ENV
-          echo "TARGET_FILE=src/content/post/space-coast-tech-events-$TARGET_MONTH.mdx" >> $GITHUB_ENV
+          echo "TARGET_FILE=src/content/post/$TARGET_DATE-space-coast-tech-events-$TARGET_MONTH_NAME-$TARGET_YEAR.mdx" >> $GITHUB_ENV
+          echo "EVENTS_DIR=src/content/event" >> $GITHUB_ENV
 
       - name: Generate markdown into site repo
         run: |
-          node tools/evnthndlr/dist/generate.js --month="${TARGET_MONTH}" --file="${TARGET_FILE}"
-          pnpm exec prettier --write "$TARGET_FILE"
+          node tools/evnthndlr/dist/generate.js --month="${TARGET_MONTH}" --file="${TARGET_FILE}" --event-dir="${EVENTS_DIR}"
+          pnpm exec prettier --write "$TARGET_FILE" "$EVENTS_DIR"
 
       - name: Create or update PR
         uses: peter-evans/create-pull-request@v7
         with:
           token: ${{ github.token }}
-          add-paths: ${{ env.TARGET_FILE }}
+          add-paths: |
+            ${{ env.TARGET_FILE }}
+            ${{ env.EVENTS_DIR }}/**
           commit-message: "Update events for ${{ env.TARGET_MONTH }}"
           title: "Update Space Coast Tech Events for ${{ env.TARGET_MONTH }}"
           body: |
