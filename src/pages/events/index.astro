@@ -1,6 +1,6 @@
 ---
 import PageLayout from '~/layouts/PageLayout.astro';
-import { getAllEvents, getEventPermalink } from '~/utils/events';
+import { getAllEvents, getEventPermalink, isSpaceCoastDevsEvent } from '~/utils/events';
 
 const events = await getAllEvents();
 const easternDate = (date: Date): string => {
@@ -84,7 +84,12 @@ const subscriptionUrl = new URL('/events/events.ics', Astro.site).toString().rep
                     <div class="mt-1 space-y-1">
                       {dayEvents.map((event) => (
                         <a
-                          class="block rounded bg-blue-50 px-2 py-1 text-xs text-primary hover:underline dark:bg-slate-800"
+                          class:list={[
+                            'block rounded px-2 py-1 text-xs hover:underline',
+                            isSpaceCoastDevsEvent(event)
+                              ? 'bg-primary font-bold text-white ring-1 ring-primary'
+                              : 'bg-blue-50 text-primary dark:bg-slate-800',
+                          ]}
                           href={getEventPermalink(event)}
                         >
                           <span class="font-semibold">{timeFormatter.format(new Date(event.data.start))}</span>{' '}
@@ -129,10 +134,22 @@ const subscriptionUrl = new URL('/events/events.ics', Astro.site).toString().rep
         {
           upcomingEvents.length ? (
             upcomingEvents.map((event) => (
-              <article class="rounded-lg border border-gray-200 p-5 dark:border-slate-700">
+              <article
+                class:list={[
+                  'rounded-lg border p-5',
+                  isSpaceCoastDevsEvent(event)
+                    ? 'border-primary bg-blue-50 ring-1 ring-primary/30 dark:bg-slate-800'
+                    : 'border-gray-200 dark:border-slate-700',
+                ]}
+              >
                 <time class="text-lg font-bold text-primary" datetime={event.data.start}>
                   {dateFormatter.format(new Date(event.data.start))}
                 </time>
+                {isSpaceCoastDevsEvent(event) && (
+                  <p class="mt-2 inline-block rounded-full bg-primary px-2 py-1 text-xs font-bold uppercase tracking-wide text-white">
+                    Space Coast Devs event
+                  </p>
+                )}
                 <h2 class="mt-2 text-xl font-semibold">
                   <a class="hover:text-primary" href={getEventPermalink(event)}>
                     {event.data.title}

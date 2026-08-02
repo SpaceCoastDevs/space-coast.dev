@@ -1,5 +1,5 @@
 ---
-import { getEventsForDateRange, getEventsForMonth, getEventPermalink } from '~/utils/events';
+import { getEventsForDateRange, getEventPermalink, getEventsForMonth, isSpaceCoastDevsEvent } from '~/utils/events';
 
 interface Props {
   month?: string;
@@ -49,8 +49,20 @@ const formatter = new Intl.DateTimeFormat('en-US', {
   {
     events.length ? (
       events.map((event) => (
-        <article class="rounded-lg border border-gray-200 p-5 dark:border-slate-700">
+        <article
+          class:list={[
+            'rounded-lg border p-5',
+            isSpaceCoastDevsEvent(event)
+              ? 'border-primary bg-blue-50 ring-1 ring-primary/30 dark:bg-slate-800'
+              : 'border-gray-200 dark:border-slate-700',
+          ]}
+        >
           <p class="text-sm text-muted dark:text-slate-400">{formatter.format(new Date(event.data.start))}</p>
+          {isSpaceCoastDevsEvent(event) && (
+            <p class="mt-2 inline-block rounded-full bg-primary px-2 py-1 text-xs font-bold uppercase tracking-wide text-white">
+              Space Coast Devs event
+            </p>
+          )}
           <h2 class="mt-1 text-xl font-semibold">
             <a class="hover:text-primary" href={getEventPermalink(event)}>
               {event.data.title}
