@@ -87,6 +87,13 @@ const eventCollection = defineCollection({
     }),
     sourceUrl: z.string().url(),
     imageUrl: z.string().url().optional(),
+    cost: z
+      .object({
+        type: z.enum(['free', 'paid']),
+        amount: z.number().nonnegative().optional(),
+        currency: z.string().length(3).optional(),
+      })
+      .optional(),
     description: z.string().min(1),
     tags: z.array(z.string().min(1)).min(1),
   }),

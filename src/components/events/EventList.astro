@@ -1,5 +1,11 @@
 ---
-import { getEventsForDateRange, getEventPermalink, getEventsForMonth, isSpaceCoastDevsEvent } from '~/utils/events';
+import {
+  getEventCostLabel,
+  getEventsForDateRange,
+  getEventPermalink,
+  getEventsForMonth,
+  isSpaceCoastDevsEvent,
+} from '~/utils/events';
 
 interface Props {
   month?: string;
@@ -72,6 +78,18 @@ const formatter = new Intl.DateTimeFormat('en-US', {
               {isSpaceCoastDevsEvent(event) && (
                 <p class="mt-2 inline-block rounded-full bg-primary px-2 py-1 text-xs font-bold uppercase tracking-wide text-white">
                   Space Coast Devs event
+                </p>
+              )}
+              {event.data.cost && (
+                <p
+                  class:list={[
+                    'mt-2 inline-block rounded-full px-2 py-1 text-xs font-bold uppercase tracking-wide',
+                    event.data.cost.type === 'free'
+                      ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-200'
+                      : 'bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-200',
+                  ]}
+                >
+                  {getEventCostLabel(event)}
                 </p>
               )}
               <h2 class="mt-1 text-xl font-semibold">

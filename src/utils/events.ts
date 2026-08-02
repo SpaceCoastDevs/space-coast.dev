@@ -11,6 +11,19 @@ export const getEventAnchorId = (event: Event) => `event-${getEventDate(event)}-
 export const isSpaceCoastDevsEvent = (event: Event) =>
   event.data.organizer.name === 'Space Coast Devs' || event.data.organizer.url.includes('space-coast-devs');
 
+export const getEventCostLabel = (event: Event) => {
+  const cost = event.data.cost;
+  if (!cost) return undefined;
+  if (cost.type === 'free') return 'Free';
+  if (typeof cost.amount !== 'number') return 'Paid';
+
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: cost.currency || 'USD',
+    maximumFractionDigits: 2,
+  }).format(cost.amount);
+};
+
 export const getEventsForMonth = async (month: string): Promise<Event[]> =>
   (await getCollection('event'))
     .filter((event) => event.data.start.startsWith(month))

@@ -1,6 +1,12 @@
 ---
 import PageLayout from '~/layouts/PageLayout.astro';
-import { getAllEvents, getEventAnchorId, getEventPermalink, isSpaceCoastDevsEvent } from '~/utils/events';
+import {
+  getAllEvents,
+  getEventAnchorId,
+  getEventCostLabel,
+  getEventPermalink,
+  isSpaceCoastDevsEvent,
+} from '~/utils/events';
 
 const events = await getAllEvents();
 const easternDate = (date: Date): string => {
@@ -163,6 +169,18 @@ const subscriptionUrl = new URL('/events/events.ics', Astro.site).toString().rep
                         Space Coast Devs event
                       </p>
                     )}
+                    {event.data.cost && (
+                      <p
+                        class:list={[
+                          'mt-2 inline-block rounded-full px-2 py-1 text-xs font-bold uppercase tracking-wide',
+                          event.data.cost.type === 'free'
+                            ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-200'
+                            : 'bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-200',
+                        ]}
+                      >
+                        {getEventCostLabel(event)}
+                      </p>
+                    )}
                     <h2 class="mt-2 text-xl font-semibold">
                       <a class="hover:text-primary" href={getEventPermalink(event)}>
                         {event.data.title}
@@ -218,6 +236,18 @@ const subscriptionUrl = new URL('/events/events.ics', Astro.site).toString().rep
                   {event.data.organizer.name}
                   {event.data.location ? ` · ${event.data.location.name}` : ''}
                 </p>
+                {event.data.cost && (
+                  <p
+                    class:list={[
+                      'mt-2 inline-block rounded-full px-2 py-1 text-xs font-bold uppercase tracking-wide',
+                      event.data.cost.type === 'free'
+                        ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-200'
+                        : 'bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-200',
+                    ]}
+                  >
+                    {getEventCostLabel(event)}
+                  </p>
+                )}
               </article>
             ))
           ) : (

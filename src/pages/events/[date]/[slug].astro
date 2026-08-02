@@ -1,7 +1,7 @@
 ---
 import type { GetStaticPaths, InferGetStaticPropsType } from 'astro';
 import PageLayout from '~/layouts/PageLayout.astro';
-import { getAllEvents } from '~/utils/events';
+import { getAllEvents, getEventCostLabel } from '~/utils/events';
 
 export const prerender = true;
 
@@ -69,6 +69,20 @@ const eventSchemaJson = JSON.stringify(eventSchema).replace(/</g, '\\u003c');
       <p class="mt-8 text-sm font-semibold uppercase tracking-wide text-muted dark:text-slate-400">Date & time</p>
       <p class="mt-1 text-2xl font-bold text-primary sm:text-3xl">{formatter.format(start)}</p>
       <h1 class="mt-2 text-4xl font-bold tracking-tight">{data.title}</h1>
+      {
+        data.cost && (
+          <p
+            class:list={[
+              'mt-4 inline-block rounded-full px-3 py-1 text-sm font-bold uppercase tracking-wide',
+              data.cost.type === 'free'
+                ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-200'
+                : 'bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-200',
+            ]}
+          >
+            {getEventCostLabel(event)}
+          </p>
+        )
+      }
       {
         data.imageUrl && (
           <img
