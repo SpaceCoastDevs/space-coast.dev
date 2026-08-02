@@ -13,6 +13,7 @@
     "build": "astro build && cp _redirects dist/_redirects",
     "preview": "astro preview",
     "seed:skills": "tsx scripts/seed-skills.ts",
+    "cache:event-images": "tsx scripts/cache-event-images.ts",
     "generate:event-images": "tsx scripts/generate-event-images.ts",
     "announce:missed": "tsx scripts/announce-missed-members.ts",
     "astro": "astro",
