@@ -1,5 +1,5 @@
 {
-  "slug": "food-truck-friday-a-pinch-of-rodriguez-2026-08-21",
+  "slug": "food-truck-friday-a-pinch-of-rodriguez",
   "title": "Food Truck Friday - A Pinch of Rodriguez",
   "start": "2026-08-21T11:00:00-04:00",
   "attendanceMode": "inPerson",
@@ -9,5 +9,6 @@
   },
   "sourceUrl": "https://www.meetup.com/startupspacecoast/events/313315663/",
   "description": "Join us for our weekly Food Truck Friday! It's a great way to get to know our community of tech-focused, highly-skilled professionals, and connect with the startup ecosystem on The Space Coast.\n\nStop by, enjoy a bite and a brew, and check out what's happening on Irwin St.",
+  "imageUrl": "https://secure.meetupstatic.com/photos/event/4/2/3/7/600_532696951.jpeg",
   "tags": ["community"]
 }

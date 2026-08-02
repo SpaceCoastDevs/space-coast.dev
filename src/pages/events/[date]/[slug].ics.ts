@@ -5,7 +5,10 @@ export const prerender = true;
 
 export const getStaticPaths = (async () => {
   const events = await getAllEvents();
-  return events.map((event) => ({ params: { slug: event.data.slug }, props: { event } }));
+  return events.map((event) => ({
+    params: { date: event.data.start.slice(0, 10), slug: event.data.slug },
+    props: { event },
+  }));
 }) satisfies GetStaticPaths;
 
 const escapeIcs = (value: string) =>

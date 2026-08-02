@@ -1,6 +1,6 @@
 ---
 import PageLayout from '~/layouts/PageLayout.astro';
-import { getAllEvents, getEventPermalink, isSpaceCoastDevsEvent } from '~/utils/events';
+import { getAllEvents, getEventAnchorId, getEventPermalink, isSpaceCoastDevsEvent } from '~/utils/events';
 
 const events = await getAllEvents();
 const easternDate = (date: Date): string => {
@@ -135,7 +135,7 @@ const subscriptionUrl = new URL('/events/events.ics', Astro.site).toString().rep
           upcomingEvents.length ? (
             upcomingEvents.map((event) => (
               <article
-                id={`event-${event.data.slug}`}
+                id={getEventAnchorId(event)}
                 tabindex="-1"
                 class:list={[
                   'rounded-lg border p-5',
@@ -144,30 +144,43 @@ const subscriptionUrl = new URL('/events/events.ics', Astro.site).toString().rep
                     : 'border-gray-200 dark:border-slate-700',
                 ]}
               >
-                <time class="text-lg font-bold text-primary" datetime={event.data.start}>
-                  {dateFormatter.format(new Date(event.data.start))}
-                </time>
-                {isSpaceCoastDevsEvent(event) && (
-                  <p class="mt-2 inline-block rounded-full bg-primary px-2 py-1 text-xs font-bold uppercase tracking-wide text-white">
-                    Space Coast Devs event
-                  </p>
-                )}
-                <h2 class="mt-2 text-xl font-semibold">
-                  <a class="hover:text-primary" href={getEventPermalink(event)}>
-                    {event.data.title}
-                  </a>
-                </h2>
-                <p class="mt-2 text-sm text-muted dark:text-slate-400">
-                  {event.data.organizer.name}
-                  {event.data.location ? ` · ${event.data.location.name}` : ''}
-                </p>
-                <div class="mt-4 flex flex-wrap gap-3">
-                  <a class="btn-secondary" href={getEventPermalink(event)}>
-                    See details
-                  </a>
-                  <a class="btn-primary" href={`/events/${event.data.slug}.ics`}>
-                    Add to calendar
-                  </a>
+                <div class="flex flex-col gap-4 sm:flex-row">
+                  {event.data.imageUrl && (
+                    <img
+                      class="h-auto max-h-56 w-full self-start rounded-md object-contain sm:w-56"
+                      src={event.data.imageUrl}
+                      alt={`Event image for ${event.data.title}`}
+                      loading="lazy"
+                      referrerpolicy="no-referrer"
+                    />
+                  )}
+                  <div class="min-w-0 flex-1">
+                    <time class="text-lg font-bold text-primary" datetime={event.data.start}>
+                      {dateFormatter.format(new Date(event.data.start))}
+                    </time>
+                    {isSpaceCoastDevsEvent(event) && (
+                      <p class="mt-2 inline-block rounded-full bg-primary px-2 py-1 text-xs font-bold uppercase tracking-wide text-white">
+                        Space Coast Devs event
+                      </p>
+                    )}
+                    <h2 class="mt-2 text-xl font-semibold">
+                      <a class="hover:text-primary" href={getEventPermalink(event)}>
+                        {event.data.title}
+                      </a>
+                    </h2>
+                    <p class="mt-2 text-sm text-muted dark:text-slate-400">
+                      {event.data.organizer.name}
+                      {event.data.location ? ` · ${event.data.location.name}` : ''}
+                    </p>
+                    <div class="mt-4 flex flex-wrap gap-3">
+                      <a class="btn-secondary" href={getEventPermalink(event)}>
+                        See details
+                      </a>
+                      <a class="btn-primary" href={`${getEventPermalink(event)}.ics`}>
+                        Add to calendar
+                      </a>
+                    </div>
+                  </div>
                 </div>
               </article>
             ))
@@ -189,7 +202,7 @@ const subscriptionUrl = new URL('/events/events.ics', Astro.site).toString().rep
           pastEvents.length ? (
             pastEvents.reverse().map((event) => (
               <article
-                id={`event-${event.data.slug}`}
+                id={getEventAnchorId(event)}
                 tabindex="-1"
                 class="rounded-lg border border-gray-200 p-5 dark:border-slate-700"
               >

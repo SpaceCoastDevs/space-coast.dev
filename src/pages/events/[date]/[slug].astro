@@ -7,7 +7,10 @@ export const prerender = true;
 
 export const getStaticPaths = (async () => {
   const events = await getAllEvents();
-  return events.map((event) => ({ params: { slug: event.data.slug }, props: { event } }));
+  return events.map((event) => ({
+    params: { date: event.data.start.slice(0, 10), slug: event.data.slug },
+    props: { event },
+  }));
 }) satisfies GetStaticPaths;
 
 type Props = InferGetStaticPropsType<typeof getStaticPaths>;
@@ -25,7 +28,8 @@ const formatter = new Intl.DateTimeFormat('en-US', {
   timeZone: 'America/New_York',
   timeZoneName: 'short',
 });
-const eventUrl = new URL(`/events/${data.slug}`, Astro.site);
+const eventDate = data.start.slice(0, 10);
+const eventUrl = new URL(`/events/${eventDate}/${data.slug}`, Astro.site);
 const eventSchema = {
   '@context': 'https://schema.org',
   '@type': 'Event',
@@ -62,10 +66,20 @@ const eventSchemaJson = JSON.stringify(eventSchema).replace(/</g, '\\u003c');
   </Fragment>
   <section class="py-12 md:py-20">
     <article class="mx-auto max-w-3xl px-4 sm:px-6">
-      <a class="text-sm text-primary hover:underline" href={`/events#event-${data.slug}`}>← All events</a>
+      <a class="text-sm text-primary hover:underline" href={`/events#event-${eventDate}-${data.slug}`}>← All events</a>
       <p class="mt-8 text-sm font-semibold uppercase tracking-wide text-muted dark:text-slate-400">Date & time</p>
       <p class="mt-1 text-2xl font-bold text-primary sm:text-3xl">{formatter.format(start)}</p>
       <h1 class="mt-2 text-4xl font-bold tracking-tight">{data.title}</h1>
+      {
+        data.imageUrl && (
+          <img
+            class="mt-6 h-auto max-h-[36rem] w-full rounded-lg object-contain"
+            src={data.imageUrl}
+            alt={`Event image for ${data.title}`}
+            referrerpolicy="no-referrer"
+          />
+        )
+      }
       <div class="mt-6 space-y-4 text-lg text-muted dark:text-slate-400">
         {descriptionParagraphs.map((paragraph) => <p>{paragraph}</p>)}
       </div>
@@ -89,7 +103,7 @@ const eventSchemaJson = JSON.stringify(eventSchema).replace(/</g, '\\u003c');
       </dl>
       <div class="mt-8 flex flex-wrap gap-3">
         <a class="btn-primary" href={data.sourceUrl} target="_blank" rel="noopener noreferrer">View event source</a>
-        <a class="btn-secondary" href={`/events/${data.slug}.ics`}>Add to calendar</a>
+        <a class="btn-secondary" href={`/events/${eventDate}/${data.slug}.ics`}>Add to calendar</a>
       </div>
     </article>
   </section>

@@ -2,7 +2,11 @@ import { getCollection, type CollectionEntry } from 'astro:content';
 
 export type Event = CollectionEntry<'event'>;
 
-export const getEventPermalink = (event: Event) => `/events/${event.data.slug}`;
+export const getEventDate = (event: Event) => event.data.start.slice(0, 10);
+
+export const getEventPermalink = (event: Event) => `/events/${getEventDate(event)}/${event.data.slug}`;
+
+export const getEventAnchorId = (event: Event) => `event-${getEventDate(event)}-${event.data.slug}`;
 
 export const isSpaceCoastDevsEvent = (event: Event) =>
   event.data.organizer.name === 'Space Coast Devs' || event.data.organizer.url.includes('space-coast-devs');

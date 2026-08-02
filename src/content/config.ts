@@ -86,6 +86,7 @@ const eventCollection = defineCollection({
       url: z.string().url(),
     }),
     sourceUrl: z.string().url(),
+    imageUrl: z.string().url().optional(),
     description: z.string().min(1),
     tags: z.array(z.string().min(1)).min(1),
   }),

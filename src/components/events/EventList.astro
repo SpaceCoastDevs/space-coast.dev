@@ -57,24 +57,40 @@ const formatter = new Intl.DateTimeFormat('en-US', {
               : 'border-gray-200 dark:border-slate-700',
           ]}
         >
-          <p class="text-sm text-muted dark:text-slate-400">{formatter.format(new Date(event.data.start))}</p>
-          {isSpaceCoastDevsEvent(event) && (
-            <p class="mt-2 inline-block rounded-full bg-primary px-2 py-1 text-xs font-bold uppercase tracking-wide text-white">
-              Space Coast Devs event
-            </p>
-          )}
-          <h2 class="mt-1 text-xl font-semibold">
-            <a class="hover:text-primary" href={getEventPermalink(event)}>
-              {event.data.title}
-            </a>
-          </h2>
-          <p class="mt-2 text-sm text-muted dark:text-slate-400">
-            {event.data.organizer.name}
-            {event.data.location ? ` · ${event.data.location.name}` : ''}
-          </p>
-          <a class="mt-3 inline-block text-sm font-medium text-primary hover:underline" href={getEventPermalink(event)}>
-            View details & add to calendar →
-          </a>
+          <div class="flex flex-col gap-4 sm:flex-row">
+            {event.data.imageUrl && (
+              <img
+                class="h-auto max-h-52 w-full self-start rounded-md object-contain sm:w-52"
+                src={event.data.imageUrl}
+                alt={`Event image for ${event.data.title}`}
+                loading="lazy"
+                referrerpolicy="no-referrer"
+              />
+            )}
+            <div class="min-w-0 flex-1">
+              <p class="text-sm text-muted dark:text-slate-400">{formatter.format(new Date(event.data.start))}</p>
+              {isSpaceCoastDevsEvent(event) && (
+                <p class="mt-2 inline-block rounded-full bg-primary px-2 py-1 text-xs font-bold uppercase tracking-wide text-white">
+                  Space Coast Devs event
+                </p>
+              )}
+              <h2 class="mt-1 text-xl font-semibold">
+                <a class="hover:text-primary" href={getEventPermalink(event)}>
+                  {event.data.title}
+                </a>
+              </h2>
+              <p class="mt-2 text-sm text-muted dark:text-slate-400">
+                {event.data.organizer.name}
+                {event.data.location ? ` · ${event.data.location.name}` : ''}
+              </p>
+              <a
+                class="mt-3 inline-block text-sm font-medium text-primary hover:underline"
+                href={getEventPermalink(event)}
+              >
+                View details & add to calendar →
+              </a>
+            </div>
+          </div>
         </article>
       ))
     ) : (
