@@ -12,6 +12,10 @@ export const headerData = {
       href: '/members',
     },
     {
+      text: 'Events',
+      href: '/events',
+    },
+    {
       text: 'Posts',
       links: [
         {

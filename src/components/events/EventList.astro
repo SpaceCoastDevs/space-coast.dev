@@ -1,0 +1,120 @@
+---
+import {
+  getEventCostLabel,
+  getEventsForDateRange,
+  getEventPermalink,
+  getEventsForMonth,
+  isSpaceCoastDevsEvent,
+} from '~/utils/events';
+
+interface Props {
+  month?: string;
+  thisWeek?: boolean;
+}
+
+const { month, thisWeek = false } = Astro.props;
+
+if (!month && !thisWeek) {
+  throw new Error('EventList requires either a month or thisWeek prop.');
+}
+
+const easternDate = (date: Date): string => {
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'America/New_York',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(date);
+  const part = (type: Intl.DateTimeFormatPartTypes) => parts.find((item) => item.type === type)?.value;
+  return `${part('year')}-${part('month')}-${part('day')}`;
+};
+
+const getThisWeekRange = (): [string, string] => {
+  const today = easternDate(new Date());
+  const todayUtc = new Date(`${today}T00:00:00Z`);
+  const weekStart = new Date(todayUtc);
+  weekStart.setUTCDate(todayUtc.getUTCDate() - todayUtc.getUTCDay());
+  const weekEnd = new Date(weekStart);
+  weekEnd.setUTCDate(weekStart.getUTCDate() + 7);
+  return [weekStart.toISOString().slice(0, 10), weekEnd.toISOString().slice(0, 10)];
+};
+
+const [weekStart, weekEnd] = getThisWeekRange();
+const events = thisWeek ? await getEventsForDateRange(weekStart, weekEnd) : await getEventsForMonth(month!);
+const formatter = new Intl.DateTimeFormat('en-US', {
+  weekday: 'short',
+  month: 'short',
+  day: 'numeric',
+  hour: 'numeric',
+  minute: '2-digit',
+  timeZone: 'America/New_York',
+});
+---
+
+<div class="not-prose my-8 space-y-4">
+  {
+    events.length ? (
+      events.map((event) => (
+        <article
+          class:list={[
+            'rounded-lg border p-5',
+            isSpaceCoastDevsEvent(event)
+              ? 'border-primary bg-blue-50 ring-1 ring-primary/30 dark:bg-slate-800'
+              : 'border-gray-200 dark:border-slate-700',
+          ]}
+        >
+          <div class="flex flex-col gap-4 sm:flex-row">
+            {event.data.imageUrl && (
+              <img
+                class="h-auto max-h-52 w-full self-start rounded-md object-contain sm:w-52"
+                src={event.data.imageUrl}
+                alt={`Event image for ${event.data.title}`}
+                loading="lazy"
+                referrerpolicy="no-referrer"
+              />
+            )}
+            <div class="min-w-0 flex-1">
+              <p class="text-sm text-muted dark:text-slate-400">{formatter.format(new Date(event.data.start))}</p>
+              {isSpaceCoastDevsEvent(event) && (
+                <p class="mt-2 inline-block rounded-full bg-primary px-2 py-1 text-xs font-bold uppercase tracking-wide text-white">
+                  Space Coast Devs event
+                </p>
+              )}
+              {event.data.cost && (
+                <p
+                  class:list={[
+                    'mt-2 inline-block rounded-full px-2 py-1 text-xs font-bold uppercase tracking-wide',
+                    event.data.cost.type === 'free'
+                      ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-200'
+                      : 'bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-200',
+                  ]}
+                >
+                  {getEventCostLabel(event)}
+                </p>
+              )}
+              <h2 class="mt-1 text-xl font-semibold">
+                <a class="hover:text-primary" href={getEventPermalink(event)}>
+                  {event.data.title}
+                </a>
+              </h2>
+              <p class="mt-2 text-sm text-muted dark:text-slate-400">
+                {event.data.organizer.name}
+                {event.data.location ? ` · ${event.data.location.name}` : ''}
+              </p>
+              <a
+                class="mt-3 inline-block text-sm font-medium text-primary hover:underline"
+                href={getEventPermalink(event)}
+              >
+                View details & add to calendar →
+              </a>
+            </div>
+          </div>
+        </article>
+      ))
+    ) : (
+      <p class="rounded-lg border border-gray-200 p-5 text-muted dark:border-slate-700 dark:text-slate-400">
+        No events are listed for this week yet. Check the event directory for upcoming events.
+      </p>
+    )
+  }
+</div>
