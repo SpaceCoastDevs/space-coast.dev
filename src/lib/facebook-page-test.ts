@@ -39,6 +39,7 @@ function requiredEnv(name: string): string {
     FACEBOOK_APP_SECRET: import.meta.env.FACEBOOK_APP_SECRET,
     FACEBOOK_OAUTH_REDIRECT_URI: import.meta.env.FACEBOOK_OAUTH_REDIRECT_URI,
     FACEBOOK_PAGE_ID: import.meta.env.FACEBOOK_PAGE_ID,
+    SESSION_SECRET: import.meta.env.SESSION_SECRET,
   };
   const value = environment[name as keyof typeof environment];
   if (!value) throw new Error(`${name} is not configured`);
