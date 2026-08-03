@@ -12,6 +12,7 @@
   "imageUrl": "/event-images/source-aa0285e91e64fd32.jpg",
   "cost": {
     "type": "free",
+    "amount": 0,
     "currency": "USD"
   },
   "tags": ["community"]
