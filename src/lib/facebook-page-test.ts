@@ -104,11 +104,20 @@ export async function createFacebookTestSession(
     `https://graph.facebook.com/${GRAPH_API_VERSION}/me/accounts?fields=id,name,access_token`,
     { headers: { Authorization: `Bearer ${userAccessToken}` } }
   );
-  if (!pagesResponse.ok) throw new Error('Facebook could not retrieve Pages for this account.');
-
-  const pages = ((await pagesResponse.json()) as { data?: FacebookPage[] }).data ?? [];
+  const pages = pagesResponse.ok ? (((await pagesResponse.json()) as { data?: FacebookPage[] }).data ?? []) : [];
   const pageId = requiredEnv('FACEBOOK_PAGE_ID');
-  const page = pages.find((candidate) => candidate.id === pageId);
+  let page = pages.find((candidate) => candidate.id === pageId);
+
+  // Some Page-management accounts do not list the Page via /me/accounts even
+  // though Facebook will issue its Page token from the Page node directly.
+  if (!page?.access_token) {
+    const pageResponse = await fetch(
+      `https://graph.facebook.com/${GRAPH_API_VERSION}/${pageId}?fields=id,name,access_token`,
+      { headers: { Authorization: `Bearer ${userAccessToken}` } }
+    );
+    if (pageResponse.ok) page = (await pageResponse.json()) as FacebookPage;
+  }
+
   if (!page?.access_token)
     throw new Error('The authorized Facebook account does not have access to the configured Page.');
 
