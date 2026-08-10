@@ -86,7 +86,7 @@ jobs:
           ---
           publishDate: ${POST_DATE}T00:00:00Z
           title: Weekly Space Coast "Tech" Events for ${WEEK_START_LABEL} - ${WEEK_END_LABEL}
-          excerpt: This week's technology events around the Space Coast.
+          excerpt: This week's technology and related events around the Space Coast.
           category: Events
           tags:
             - meetups
