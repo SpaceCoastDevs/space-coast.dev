@@ -2,6 +2,7 @@
   "slug": "volunteer-night",
   "title": "Volunteer Night",
   "start": "2026-09-23T19:00:00-04:00",
+  "end": "2026-09-24T01:00:00.000Z",
   "attendanceMode": "inPerson",
   "organizer": {
     "name": "Melbourne Makerspace (Florida USA)",
@@ -10,5 +11,7 @@
   "sourceUrl": "https://www.meetup.com/melbourne-makerspace-florida-usa/events/316011367/",
   "description": "We can use your help!\n\nThere are a number of small jobs around the Makerspace that need to get done, and the volunteers that run the space don't have enough time to do all of them. Tonight, we will be cleaning and performing simple maintenance.\n\nRemember, we are all volunteers. It's through our combined effort that we can keep the Makerspace running smoothly.",
   "imageUrl": "/event-images/source-8ffa46a173de535a.jpg",
-  "tags": ["community"]
+  "tags": [
+    "community"
+  ]
 }

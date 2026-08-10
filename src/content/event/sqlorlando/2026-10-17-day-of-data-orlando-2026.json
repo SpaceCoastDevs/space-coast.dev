@@ -2,6 +2,7 @@
   "slug": "day-of-data-orlando-2026",
   "title": "Day of Data Orlando 2026",
   "start": "2026-10-17T08:00:00-04:00",
+  "end": "2026-10-17T16:00:00-04:00",
   "attendanceMode": "inPerson",
   "organizer": {
     "name": "SQLOrlando",

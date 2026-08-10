@@ -2,6 +2,7 @@
   "slug": "food-truck-friday-a-pinch-of-rodriguez",
   "title": "Food Truck Friday - A Pinch of Rodriguez",
   "start": "2026-08-21T11:00:00-04:00",
+  "end": "2026-08-21T14:00:00-04:00",
   "attendanceMode": "inPerson",
   "organizer": {
     "name": "Groundswell Startups: Space Coast",
@@ -10,5 +11,7 @@
   "sourceUrl": "https://www.meetup.com/startupspacecoast/events/313315663/",
   "description": "Join us for our weekly Food Truck Friday! It's a great way to get to know our community of tech-focused, highly-skilled professionals, and connect with the startup ecosystem on The Space Coast.\n\nStop by, enjoy a bite and a brew, and check out what's happening on Irwin St.",
   "imageUrl": "/event-images/source-ef8625d4e4165f24.jpg",
-  "tags": ["community"]
+  "tags": [
+    "community"
+  ]
 }

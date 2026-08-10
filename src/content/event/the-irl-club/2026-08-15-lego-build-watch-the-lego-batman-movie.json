@@ -2,6 +2,7 @@
   "slug": "lego-build-watch-the-lego-batman-movie",
   "title": "🦇 LEGO Build & Watch: The LEGO Batman Movie",
   "start": "2026-08-15T15:00:00.000-04:00",
+  "end": "2026-08-15T17:00:00.000-04:00",
   "attendanceMode": "inPerson",
   "organizer": {
     "name": "The IRL Club",
@@ -15,5 +16,7 @@
     "amount": 10,
     "currency": "USD"
   },
-  "tags": ["community"]
+  "tags": [
+    "community"
+  ]
 }

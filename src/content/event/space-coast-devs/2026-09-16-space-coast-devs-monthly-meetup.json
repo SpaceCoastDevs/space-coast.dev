@@ -2,6 +2,7 @@
   "slug": "space-coast-devs-monthly-meetup",
   "title": "Space Coast Devs Monthly Meetup",
   "start": "2026-09-16T18:00:00-04:00",
+  "end": "2026-09-17T00:00:00.000Z",
   "attendanceMode": "inPerson",
   "organizer": {
     "name": "Space Coast Devs",
@@ -10,5 +11,7 @@
   "sourceUrl": "https://www.meetup.com/space-coast-devs/events/315633028/",
   "description": "Join us every third Wednesday at Protowork Studio Hangout from 6:00 PM to 8:00 PM. The first hour is casual networking, followed by a light presentation or two, community lightning talks, tech topics, or project updates.\n\nWe will bring some pizza for this kick off event.\n\n6:00 PM - 7:00 PM: casual networking | 7:00 PM - 8:00 PM: talks and project updates",
   "imageUrl": "/event-images/2026-09-16-space-coast-devs-monthly-meetup.png",
-  "tags": ["community"]
+  "tags": [
+    "community"
+  ]
 }

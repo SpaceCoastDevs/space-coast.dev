@@ -2,6 +2,7 @@
   "slug": "paint-your-own-hobbit-house",
   "title": "🎨 Paint Your Own Hobbit House",
   "start": "2026-08-29T14:00:00.000-04:00",
+  "end": "2026-08-29T16:00:00.000-04:00",
   "attendanceMode": "inPerson",
   "organizer": {
     "name": "The IRL Club",
@@ -15,5 +16,7 @@
     "amount": 40,
     "currency": "USD"
   },
-  "tags": ["community"]
+  "tags": [
+    "community"
+  ]
 }

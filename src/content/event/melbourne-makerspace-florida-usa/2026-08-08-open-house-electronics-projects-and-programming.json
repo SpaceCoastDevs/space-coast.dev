@@ -2,6 +2,7 @@
   "slug": "open-house-electronics-projects-and-programming",
   "title": "Open House: Electronics Projects and Programming",
   "start": "2026-08-08T10:00:00-04:00",
+  "end": "2026-08-08T16:00:00.000Z",
   "attendanceMode": "inPerson",
   "organizer": {
     "name": "Melbourne Makerspace (Florida USA)",
@@ -10,5 +11,7 @@
   "sourceUrl": "https://www.meetup.com/melbourne-makerspace-florida-usa/events/",
   "description": "Want to learn basic electronics? Interested in working with a microcontroller, like the arduino, ESP32, or the Raspberry Pi Pico? Need help designing your own PCB? Want to learn to program in Python? Or do you just want to find out more about the Makerspace (and take a tour)? All you have to do is stop by the open house and ask, and someone will be happy to work with you.\n\nThe open house is generally unstructured. It has been more effective to work with people 1 on 1. That way people can start, and continue, learning at their own pace.\n\n(Picture courtesy of Wikimedia Commons)",
   "imageUrl": "/event-images/source-5a1ca446d5e194d3.jpg",
-  "tags": ["community"]
+  "tags": [
+    "community"
+  ]
 }
