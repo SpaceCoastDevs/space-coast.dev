@@ -2,8 +2,8 @@ name: Update Space Coast Events
 
 on:
   schedule:
-    # Every Monday at 15:00 UTC (11:00 EDT / 10:00 EST).
-    - cron: "0 15 * * 1"
+    # Every Sunday night at 03:00 UTC Monday (11:00 PM EDT / 10:00 PM EST).
+    - cron: "0 3 * * 1"
   workflow_dispatch:
     inputs:
       target_month:
@@ -72,6 +72,36 @@ jobs:
           pnpm run generate:event-images
           pnpm exec prettier --write "$EVENTS_DIR"
 
+      - name: Create weekly event post
+        run: |
+          POST_DATE="$(date -u +%Y-%m-%d)"
+          POST_FILE="src/content/post/${POST_DATE}-weekly-space-coast-tech-events.mdx"
+
+          cat > "$POST_FILE" <<EOF
+          ---
+          publishDate: ${POST_DATE}T00:00:00Z
+          title: Weekly Space Coast Tech Events
+          excerpt: This week's technology events around the Space Coast.
+          category: Events
+          tags:
+            - meetups
+            - events
+          slug: weekly-space-coast-tech-events
+          permalink: posts/${POST_DATE}/weekly-space-coast-tech-events
+          image: ~/assets/images/space-coast-devs-events.png
+          ---
+
+          import EventList from '~/components/events/EventList.astro';
+
+          ## This week's events
+
+          This roundup updates weekly. Select an event below for its location, source link, and calendar download. For other upcoming events, browse the [full event directory](/events).
+
+          <EventList thisWeek />
+          EOF
+
+          pnpm exec prettier --write "$POST_FILE"
+
       - name: Create or update PR
         uses: peter-evans/create-pull-request@v7
         with:
@@ -79,6 +109,7 @@ jobs:
           add-paths: |
             ${{ env.EVENTS_DIR }}/**
             public/event-images/**
+            src/content/post/*-weekly-space-coast-tech-events.mdx
           commit-message: "Update event records for ${{ env.TARGET_MONTH }}"
           title: "Update Space Coast event records for ${{ env.TARGET_MONTH }}"
           body: |
