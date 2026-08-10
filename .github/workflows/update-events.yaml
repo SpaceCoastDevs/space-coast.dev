@@ -86,7 +86,7 @@ jobs:
           tags:
             - meetups
             - events
-          slug: weekly-space-coast-tech-events
+          slug: ${POST_DATE}-weekly-space-coast-tech-events
           permalink: posts/${POST_DATE}/weekly-space-coast-tech-events
           image: ~/assets/images/space-coast-devs-events.png
           ---
