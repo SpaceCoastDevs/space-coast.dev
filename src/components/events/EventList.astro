@@ -9,38 +9,33 @@ import {
 
 interface Props {
   month?: string;
-  thisWeek?: boolean;
+  weekOf?: string;
 }
 
-const { month, thisWeek = false } = Astro.props;
+const { month, weekOf } = Astro.props;
 
-if (!month && !thisWeek) {
-  throw new Error('EventList requires either a month or thisWeek prop.');
+if (!month && !weekOf) {
+  throw new Error('EventList requires either a month or a weekOf prop.');
 }
 
-const easternDate = (date: Date): string => {
-  const parts = new Intl.DateTimeFormat('en-CA', {
-    timeZone: 'America/New_York',
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-  }).formatToParts(date);
-  const part = (type: Intl.DateTimeFormatPartTypes) => parts.find((item) => item.type === type)?.value;
-  return `${part('year')}-${part('month')}-${part('day')}`;
-};
+const getWeekRange = (date: string): [string, string] => {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+    throw new Error('EventList weekOf must use YYYY-MM-DD format.');
+  }
 
-const getThisWeekRange = (): [string, string] => {
-  const today = easternDate(new Date());
-  const todayUtc = new Date(`${today}T00:00:00Z`);
-  const weekStart = new Date(todayUtc);
-  weekStart.setUTCDate(todayUtc.getUTCDate() - todayUtc.getUTCDay());
+  const weekStart = new Date(`${date}T00:00:00Z`);
+  if (Number.isNaN(weekStart.valueOf())) {
+    throw new Error('EventList weekOf must be a valid date.');
+  }
+
+  // getUTCDay is Sunday = 0, so shift it to Monday = 0.
+  weekStart.setUTCDate(weekStart.getUTCDate() - ((weekStart.getUTCDay() + 6) % 7));
   const weekEnd = new Date(weekStart);
   weekEnd.setUTCDate(weekStart.getUTCDate() + 7);
   return [weekStart.toISOString().slice(0, 10), weekEnd.toISOString().slice(0, 10)];
 };
 
-const [weekStart, weekEnd] = getThisWeekRange();
-const events = thisWeek ? await getEventsForDateRange(weekStart, weekEnd) : await getEventsForMonth(month!);
+const events = weekOf ? await getEventsForDateRange(...getWeekRange(weekOf)) : await getEventsForMonth(month!);
 const formatter = new Intl.DateTimeFormat('en-US', {
   weekday: 'short',
   month: 'short',

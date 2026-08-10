@@ -2,6 +2,7 @@
   "slug": "network-launch-florida-s-space-coast-august-2026",
   "title": "NETWORK LAUNCH - FLORIDA'S SPACE COAST (August 2026)",
   "start": "2026-08-18T17:30:00-04:00",
+  "end": "2026-08-18T19:30:00-04:00",
   "attendanceMode": "inPerson",
   "organizer": {
     "name": "Network Launch",
@@ -12,6 +13,7 @@
   "imageUrl": "/event-images/source-98fc211bf939c4b9.jpg",
   "cost": {
     "type": "free",
+    "amount": 0,
     "currency": "USD"
   },
   "tags": ["community"]
