@@ -21,10 +21,24 @@ const easternDate = (date: Date): string => {
 };
 const now = new Date();
 const today = easternDate(now);
-const upcomingEvents = events.filter((event) => new Date(event.data.start) >= now);
+const todayDate = new Date(`${today}T00:00:00Z`);
+// getUTCDay is Sunday = 0, so shift it to Monday = 0.
+const daysSinceMonday = (todayDate.getUTCDay() + 6) % 7;
+const weekStartDate = new Date(todayDate);
+weekStartDate.setUTCDate(todayDate.getUTCDate() - daysSinceMonday);
+const weekEndDate = new Date(weekStartDate);
+weekEndDate.setUTCDate(weekStartDate.getUTCDate() + 7);
+const weekStart = weekStartDate.toISOString().slice(0, 10);
+const weekEnd = weekEndDate.toISOString().slice(0, 10);
+const upcomingEvents = events.filter((event) => {
+  const eventDate = event.data.start.slice(0, 10);
+  return eventDate >= weekStart && eventDate < weekEnd;
+});
 const pastEvents = events.filter((event) => new Date(event.data.start) < now);
 const currentMonth = today.slice(0, 7);
-const calendarEvents = upcomingEvents.filter((event) => event.data.start.slice(0, 7) === currentMonth);
+const calendarEvents = events.filter(
+  (event) => new Date(event.data.start) >= now && event.data.start.slice(0, 7) === currentMonth
+);
 const [year, month] = currentMonth.split('-').map(Number);
 const firstDay = new Date(Date.UTC(year, month - 1, 1));
 const monthLabelDate = new Date(Date.UTC(year, month - 1, 1, 12));
@@ -205,7 +219,7 @@ const subscriptionUrl = new URL('/events/events.ics', Astro.site).toString().rep
               </article>
             ))
           ) : (
-            <p class="text-muted dark:text-slate-400">No upcoming events are listed yet.</p>
+            <p class="text-muted dark:text-slate-400">No events are listed for this week yet.</p>
           )
         }
       </div>
