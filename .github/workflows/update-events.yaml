@@ -77,12 +77,13 @@ jobs:
           RUN_DATE="$(date -u +%Y-%m-%d)"
           RUN_DAY="$(date -u +%u)"
           POST_DATE="$(date -u -d "${RUN_DATE} - $((RUN_DAY - 1)) days" +%Y-%m-%d)"
+          WEEK_END="$(date -u -d "${POST_DATE} + 6 days" +%Y-%m-%d)"
           POST_FILE="src/content/post/${POST_DATE}-weekly-space-coast-tech-events.mdx"
 
           cat > "$POST_FILE" <<EOF
           ---
           publishDate: ${POST_DATE}T00:00:00Z
-          title: Weekly Space Coast Tech Events
+          title: Weekly Space Coast "Tech" Events for ${POST_DATE} - ${WEEK_END}
           excerpt: This week's technology events around the Space Coast.
           category: Events
           tags:
