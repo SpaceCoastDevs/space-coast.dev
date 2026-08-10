@@ -118,5 +118,5 @@ jobs:
           body: |
             Automated weekly event record refresh.
             Refreshed months: ${{ env.TARGET_MONTH }} and ${{ env.NEXT_MONTH }}.
-          branch: "automation/events-${{ env.TARGET_MONTH }}"
+          branch: "automation/events-${{ env.POST_DATE }}"
           delete-branch: true
