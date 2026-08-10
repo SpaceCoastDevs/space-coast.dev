@@ -16,7 +16,5 @@
     "amount": 10,
     "currency": "USD"
   },
-  "tags": [
-    "community"
-  ]
+  "tags": ["community"]
 }

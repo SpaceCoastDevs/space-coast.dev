@@ -17,7 +17,5 @@
     "maximumAmount": 108.55,
     "currency": "USD"
   },
-  "tags": [
-    "community"
-  ]
+  "tags": ["community"]
 }
