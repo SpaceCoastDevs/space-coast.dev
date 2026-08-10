@@ -74,7 +74,9 @@ jobs:
 
       - name: Create weekly event post
         run: |
-          POST_DATE="$(date -u +%Y-%m-%d)"
+          RUN_DATE="$(date -u +%Y-%m-%d)"
+          RUN_DAY="$(date -u +%u)"
+          POST_DATE="$(date -u -d "${RUN_DATE} - $((RUN_DAY - 1)) days" +%Y-%m-%d)"
           POST_FILE="src/content/post/${POST_DATE}-weekly-space-coast-tech-events.mdx"
 
           cat > "$POST_FILE" <<EOF
@@ -97,7 +99,7 @@ jobs:
 
           This roundup updates weekly. Select an event below for its location, source link, and calendar download. For other upcoming events, browse the [full event directory](/events).
 
-          <EventList thisWeek />
+          <EventList weekOf="${POST_DATE}" />
           EOF
 
           pnpm exec prettier --write "$POST_FILE"
