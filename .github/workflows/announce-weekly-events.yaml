@@ -12,6 +12,17 @@ on:
         description: 'Post date to announce, in YYYY-MM-DD format'
         required: true
         type: string
+      target:
+        description: 'Where to post the announcement'
+        required: true
+        default: all
+        type: choice
+        options:
+          - all
+          - facebook
+          - bluesky
+          - x
+          - discord
 
 permissions:
   contents: read
@@ -54,6 +65,7 @@ jobs:
 
       - name: Post to Facebook
         id: post-facebook
+        if: github.event_name == 'push' || inputs.target == 'all' || inputs.target == 'facebook'
         continue-on-error: true
         env:
           FACEBOOK_PAGE_ACCESS_TOKEN: ${{ secrets.FACEBOOK_PAGE_ACCESS_TOKEN }}
@@ -74,6 +86,7 @@ jobs:
 
       - name: Post to Bluesky
         id: post-bluesky
+        if: github.event_name == 'push' || inputs.target == 'all' || inputs.target == 'bluesky'
         continue-on-error: true
         env:
           BLUESKY_APP_PASSWORD: ${{ secrets.BLUESKY_APP_PASSWORD }}
@@ -91,11 +104,22 @@ jobs:
             -H 'Content-Type: application/json' \
             --data "$session_payload" \
             'https://bsky.social/xrpc/com.atproto.server.createSession' | jq -er '.accessJwt')"
-          post_payload="$(jq -nc --arg repo "$BLUESKY_HANDLE" --arg url "$POST_URL" '{
+          message="📅 This week’s Space Coast tech events are live!\n\n$POST_URL"
+          post_payload="$(jq -nc --arg repo "$BLUESKY_HANDLE" --arg text "$message" --arg url "$POST_URL" '{
             repo: $repo,
             collection: "app.bsky.feed.post",
             record: {
-              text: "📅 This week’s Space Coast tech events are live!\n\n\($url)",
+              text: $text,
+              facets: [{
+                index: {
+                  byteStart: ($text | split($url)[0] | utf8bytelength),
+                  byteEnd: ($text | utf8bytelength)
+                },
+                features: [{
+                  "$type": "app.bsky.richtext.facet#link",
+                  uri: $url
+                }]
+              }],
               createdAt: (now | todateiso8601)
             }
           }')"
@@ -109,6 +133,7 @@ jobs:
 
       - name: Post to X
         id: post-x
+        if: github.event_name == 'push' || inputs.target == 'all' || inputs.target == 'x'
         continue-on-error: true
         env:
           POST_URL: ${{ steps.post.outputs.url }}
@@ -120,7 +145,7 @@ jobs:
           fi
 
           payload="$(jq -nc --arg url "$POST_URL" '{
-            text: "📅 This week’s Space Coast tech events are live! Browse local events and add them to your calendar: " + $url
+            text: "📅 This week’s Space Coast tech events are live! Browse local events and add them to your calendar: \($url)"
           }')"
 
           curl --fail-with-body --silent --show-error \
@@ -132,6 +157,7 @@ jobs:
 
       - name: Post to Discord local events channel
         id: post-discord
+        if: github.event_name == 'push' || inputs.target == 'all' || inputs.target == 'discord'
         continue-on-error: true
         env:
           DISCORD_LOCAL_EVENTS_WEBHOOK_URL: ${{ secrets.DISCORD_LOCAL_EVENTS_WEBHOOK_URL }}
