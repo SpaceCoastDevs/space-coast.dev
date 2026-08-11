@@ -104,7 +104,7 @@ jobs:
             -H 'Content-Type: application/json' \
             --data "$session_payload" \
             'https://bsky.social/xrpc/com.atproto.server.createSession' | jq -er '.accessJwt')"
-          message="📅 This week’s Space Coast tech events are live!\n\n$POST_URL"
+          message=$'📅 This week’s Space Coast tech events are live!\n\n'"$POST_URL"
           post_payload="$(jq -nc --arg repo "$BLUESKY_HANDLE" --arg text "$message" --arg url "$POST_URL" '{
             repo: $repo,
             collection: "app.bsky.feed.post",
