@@ -53,6 +53,8 @@ jobs:
           echo "url=https://space-coast.dev/posts/${POST_DATE}/weekly-space-coast-tech-events" >> "$GITHUB_OUTPUT"
 
       - name: Post to Facebook
+        id: post-facebook
+        continue-on-error: true
         env:
           FACEBOOK_PAGE_ACCESS_TOKEN: ${{ secrets.FACEBOOK_PAGE_ACCESS_TOKEN }}
           FACEBOOK_PAGE_ID: ${{ secrets.FACEBOOK_PAGE_ID }}
@@ -71,6 +73,8 @@ jobs:
             "https://graph.facebook.com/$FACEBOOK_PAGE_ID/feed"
 
       - name: Post to Bluesky
+        id: post-bluesky
+        continue-on-error: true
         env:
           BLUESKY_APP_PASSWORD: ${{ secrets.BLUESKY_APP_PASSWORD }}
           BLUESKY_HANDLE: ${{ secrets.BLUESKY_HANDLE }}
@@ -91,7 +95,7 @@ jobs:
             repo: $repo,
             collection: "app.bsky.feed.post",
             record: {
-              text: "📅 This week’s Space Coast tech events are live!\n\n" + $url,
+              text: "📅 This week’s Space Coast tech events are live!\n\n\($url)",
               createdAt: (now | todateiso8601)
             }
           }')"
@@ -104,6 +108,8 @@ jobs:
             'https://bsky.social/xrpc/com.atproto.repo.createRecord'
 
       - name: Post to X
+        id: post-x
+        continue-on-error: true
         env:
           POST_URL: ${{ steps.post.outputs.url }}
           X_USER_ACCESS_TOKEN: ${{ secrets.X_USER_ACCESS_TOKEN }}
@@ -125,6 +131,8 @@ jobs:
             'https://api.x.com/2/tweets'
 
       - name: Post to Discord local events channel
+        id: post-discord
+        continue-on-error: true
         env:
           DISCORD_LOCAL_EVENTS_WEBHOOK_URL: ${{ secrets.DISCORD_LOCAL_EVENTS_WEBHOOK_URL }}
           POST_URL: ${{ steps.post.outputs.url }}
@@ -149,3 +157,23 @@ jobs:
             -H 'Content-Type: application/json' \
             --data "$payload" \
             "$DISCORD_LOCAL_EVENTS_WEBHOOK_URL"
+
+      - name: Report announcement failures
+        if: always()
+        env:
+          FACEBOOK_OUTCOME: ${{ steps.post-facebook.outcome }}
+          BLUESKY_OUTCOME: ${{ steps.post-bluesky.outcome }}
+          X_OUTCOME: ${{ steps.post-x.outcome }}
+          DISCORD_OUTCOME: ${{ steps.post-discord.outcome }}
+        run: |
+          failed_targets=()
+
+          [ "$FACEBOOK_OUTCOME" = "failure" ] && failed_targets+=("Facebook")
+          [ "$BLUESKY_OUTCOME" = "failure" ] && failed_targets+=("Bluesky")
+          [ "$X_OUTCOME" = "failure" ] && failed_targets+=("X")
+          [ "$DISCORD_OUTCOME" = "failure" ] && failed_targets+=("Discord")
+
+          if [ "${#failed_targets[@]}" -gt 0 ]; then
+            echo "Announcement failed for: ${failed_targets[*]}" >&2
+            exit 1
+          fi
