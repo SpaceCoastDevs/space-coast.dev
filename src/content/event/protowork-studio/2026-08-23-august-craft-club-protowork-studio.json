@@ -1,0 +1,20 @@
+{
+  "slug": "august-craft-club-protowork-studio",
+  "title": "August Craft Club @ Protowork•Studio",
+  "start": "2026-08-23T14:00:00-04:00",
+  "end": "2026-08-23T16:00:00-04:00",
+  "attendanceMode": "inPerson",
+  "organizer": {
+    "name": "Protowork•Studio",
+    "url": "https://www.eventbrite.com/o/protoworkstudio-76945735013"
+  },
+  "sourceUrl": "https://www.eventbrite.com/e/august-craft-club-protoworkstudio-tickets-1997623704274",
+  "description": "Join our Community Craft Club hosted at Protowork•Studio! Bring your own craft to work on amongst friends :)",
+  "imageUrl": "/event-images/source-fb812d49e0caef5b.jpg",
+  "cost": {
+    "type": "free",
+    "amount": 0,
+    "currency": "USD"
+  },
+  "tags": ["community"]
+}
