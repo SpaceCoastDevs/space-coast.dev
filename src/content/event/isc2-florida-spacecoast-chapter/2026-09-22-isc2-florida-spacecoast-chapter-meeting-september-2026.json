@@ -1,0 +1,20 @@
+{
+  "slug": "isc2-florida-spacecoast-chapter-meeting-september-2026",
+  "title": "ISC2 Florida SpaceCoast Chapter Meeting - September 2026",
+  "start": "2026-09-22T18:30:00-04:00",
+  "end": "2026-09-22T20:00:00-04:00",
+  "attendanceMode": "inPerson",
+  "organizer": {
+    "name": "ISC2 Florida SpaceCoast Chapter",
+    "url": "https://www.eventbrite.com/o/isc2-florida-spacecoast-chapter-72982354203"
+  },
+  "sourceUrl": "https://www.eventbrite.com/e/isc2-florida-spacecoast-chapter-meeting-september-2026-tickets-1999174004263",
+  "description": "Join us for the June ISC2 SpaceCoast Chapter Meeting, where cybersecurity professionals gather to network, learn, & share insights",
+  "imageUrl": "/event-images/source-24844ae4a52a809c.jpg",
+  "cost": {
+    "type": "paid",
+    "amount": 15,
+    "currency": "USD"
+  },
+  "tags": ["community"]
+}
