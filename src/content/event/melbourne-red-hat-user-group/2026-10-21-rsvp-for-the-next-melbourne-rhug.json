@@ -1,0 +1,15 @@
+{
+  "slug": "rsvp-for-the-next-melbourne-rhug",
+  "title": "RSVP for the next Melbourne RHUG! ",
+  "start": "2026-10-21T17:00:00-04:00",
+  "end": "2026-10-21T20:00:00-04:00",
+  "attendanceMode": "inPerson",
+  "organizer": {
+    "name": "Melbourne Red Hat User Group",
+    "url": "https://www.meetup.com/melbourne-rhug"
+  },
+  "sourceUrl": "https://www.meetup.com/melbourne-rhug/events/316375290/",
+  "description": "**REGISTER HERE: [https://reg.experiences.redhat.com/flow/redhat/4816596/rhexpressregistration/page/expressregistration?sc\\_cid=RHCTN1260000493939](https://reg.experiences.redhat.com/flow/redhat/4816596/rhexpressregistration/page/expressregistration?sc_cid=RHCTN1260000493939)**  \nHi,  \nTransitioning to image-mode operating systems provides immutability, but verifying and trusting the operating system underneath your applications requires a clear assurance strategy.  \nJoin us for the next [Melbourne Red Hat User Group (RHUG)](https://reg.experiences.redhat.com/flow/redhat/4816596/rhexpressregistration/page/expressregistration?sc_cid=RHCTN1260000493939) meeting to examine a practical field report on moving from basic immutable images to fully assured boot states using CI/CD pipelines and bootc.\n\n\\### Key Topics\n\n-   OS Assurance: Moving beyond basic immutability to verify and trust the operating system layer.\n-   CI/CD Integration: Leveraging bootc and CI/CD pipelines to automate image-mode OS creation and deployment.\n-   Field Report Insights: Lessons drawn from homelab implementations and defense/intelligence engineering requirements.\n-   Networking: Connect with local IT leaders and peers over food and drinks.\n\n\\### [Event Details](https://reg.experiences.redhat.com/flow/redhat/4816596/rhexpressregistration/page/expressregistration?sc_cid=RHCTN1260000493939)\n\n-   Date: Wednesday, October 21, 2026\n-   Time: 5:00 PM – 8:00 PM ET\n-   Location: One Oak, 1800 W Hibiscus Blvd #108, Melbourne, FL 32901\n-   Includes: Food, drinks, and networking\n\nIf you have any questions, email [rhug@redhat.com.](http://rhug@redhat.com.)  \nBest regards,",
+  "imageUrl": "/event-images/source-7b5992968ab0f88a.jpg",
+  "tags": ["community"]
+}
