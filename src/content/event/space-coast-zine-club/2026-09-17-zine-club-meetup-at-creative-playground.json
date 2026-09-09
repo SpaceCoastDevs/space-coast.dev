@@ -1,0 +1,23 @@
+{
+  "slug": "zine-club-meetup-at-creative-playground",
+  "title": "Space Coast Zine Club Meetup at Creative Playground",
+  "start": "2026-09-17T17:30:00-04:00",
+  "end": "2026-09-17T19:00:00-04:00",
+  "attendanceMode": "inPerson",
+  "location": {
+    "name": "The Creative Playground",
+    "url": "https://www.instagram.com/thecreativeplayground_brevard/"
+  },
+  "organizer": {
+    "name": "Space Coast Zine Club",
+    "url": "https://www.instagram.com/spacecoastzineclub/"
+  },
+  "sourceUrl": "https://www.instagram.com/spacecoastzineclub/",
+  "description": "Join Space Coast Zine Club for its first-ever meetup at The Creative Playground. Make your own mini zine, cut, paste, doodle, collage, meet other local creatives, and explore the creative space. Admission is free and basic supplies are provided; feel free to bring favorite pens, magazines, stickers, scissors, or other crafty materials. Come alone, bring a friend, or just bring an idea.",
+  "cost": {
+    "type": "free",
+    "amount": 0,
+    "currency": "USD"
+  },
+  "tags": ["community"]
+}
