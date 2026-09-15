@@ -19,5 +19,6 @@
     "amount": 0,
     "currency": "USD"
   },
-  "tags": ["community"]
+  "tags": ["community"],
+  "imageUrl": "/event-images/2026-09-17-zine-club-meetup-at-creative-playground.png"
 }

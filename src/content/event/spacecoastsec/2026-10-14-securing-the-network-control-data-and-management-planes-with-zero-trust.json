@@ -1,0 +1,15 @@
+{
+  "slug": "securing-the-network-control-data-and-management-planes-with-zero-trust",
+  "title": "Securing the Network Control, Data, and Management Planes with Zero Trust",
+  "start": "2026-10-14T18:30:00-04:00",
+  "end": "2026-10-14T20:30:00-04:00",
+  "attendanceMode": "inPerson",
+  "organizer": {
+    "name": "SpaceCoastSec - Space Coast's Information Security Community",
+    "url": "https://www.meetup.com/spacecoastsec"
+  },
+  "sourceUrl": "https://www.meetup.com/spacecoastsec/events/313526433/",
+  "description": "This will be a hybrid meeting, both in person and online. The virtual link will be provided in the description below as we get closer to the meeting date.\n\n**Summary:** This presentation explores the implementation of Zero Trust Architecture\n\n(ZTA) in routing and switching network infrastructure and protocols to  \nenhance security across the control, data, and management planes. It covers  \nstrategies for securing routing and switching protocols, MPLS VPNs, and  \nsegment routing paths, preventing unauthorized access, spoofing, and traffic  \ninterception. Key topics include network systems engineering, traffic  \nanalysis for Zero Trust implementation, in-band and out-of-band network  \nmanagement, diodes, micro-segmentation, secure visualization and  \ninstrumentation, and AI/ML-driven traffic analysis for anomaly detection.  \nAttendees will gain insights into integrating Zero Trust principles into  \nexisting and new network infrastructures and ensuring network infrastructure  \nresilience against evolving cyber threats.\n\n**Speaker Bio:** Paul is a Cyber SME at nou Systems, Inc. His expertise includes space systems, service provider, and ICS/SCADA network infrastructure attacks and defenses, as well as large complex network design and implementation. He has a BS in Math\\\\Computer Science, a MS in Space Systems, a MS in Systems Management, a MS in Information Assurance and Security and a MS in Computer Information Systems. In addition, he holds numerous industry network and security certifications.\n\nJoin SpaceCoastSec at 6:30PM EST for an in-person gathering of local cybersecurity professionals, enthusiasts, and curious learners. Each meetup features a speaker discussing a timely infosec topic, as well as open discussion time before and after the presentation for casual banter and friendly networking. Our sessions are informal, inclusive, and completely free—no matter your experience level or background. Come learn, share ideas, ask questions, and stay updated on the latest trends in cybersecurity as part of Brevard County’s growing information security community.\n\nOur monthly in-person meetups are held on the 2nd floor of Building 17 on the EFSC Melbourne campus unless otherwise stated here on Meetup.",
+  "imageUrl": "/event-images/source-d1a20e3077740fd6.jpg",
+  "tags": ["community"]
+}
