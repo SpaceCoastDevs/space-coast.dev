@@ -1,0 +1,20 @@
+{
+  "slug": "october-hike-at-merritt-island-pioneer-trail",
+  "title": "October Hike at Merritt Island Pioneer Trail",
+  "start": "2026-10-18T08:00:00-04:00",
+  "end": "2026-10-18T09:30:00-04:00",
+  "attendanceMode": "inPerson",
+  "organizer": {
+    "name": "Protowork•Studio",
+    "url": "https://www.eventbrite.com/o/protoworkstudio-76945735013"
+  },
+  "sourceUrl": "https://www.eventbrite.com/e/october-hike-at-merritt-island-pioneer-trail-tickets-2003249862264",
+  "description": "Join us for a hike at the Island Pioneer Trail in Merritt Island! We recommend sneakers or hiking boots, water, sun protection & bug spray!",
+  "imageUrl": "/event-images/source-afcf6ca0f81829e5.jpg",
+  "cost": {
+    "type": "free",
+    "amount": 0,
+    "currency": "USD"
+  },
+  "tags": ["community"]
+}
