@@ -1,0 +1,20 @@
+{
+  "slug": "september-craft-club-protowork-studio",
+  "title": "September Craft Club @ Protowork•Studio",
+  "start": "2026-09-27T14:00:00-04:00",
+  "end": "2026-09-27T16:00:00-04:00",
+  "attendanceMode": "inPerson",
+  "organizer": {
+    "name": "Protowork•Studio",
+    "url": "https://www.eventbrite.com/o/protoworkstudio-76945735013"
+  },
+  "sourceUrl": "https://www.eventbrite.com/e/september-craft-club-protoworkstudio-tickets-2000606884045",
+  "description": "Join our Community Craft Club hosted at Protowork•Studio! Bring your own craft to work on amongst friends :)",
+  "imageUrl": "/event-images/source-18e48d9beff0f62a.jpg",
+  "cost": {
+    "type": "free",
+    "amount": 0,
+    "currency": "USD"
+  },
+  "tags": ["community"]
+}
