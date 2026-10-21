@@ -36,9 +36,7 @@ const upcomingEvents = events.filter((event) => {
 });
 const pastEvents = events.filter((event) => new Date(event.data.start) < now);
 const currentMonth = today.slice(0, 7);
-const calendarEvents = events.filter(
-  (event) => new Date(event.data.start) >= now && event.data.start.slice(0, 7) === currentMonth
-);
+const calendarEvents = events.filter((event) => event.data.start.slice(0, 7) === currentMonth);
 const [year, month] = currentMonth.split('-').map(Number);
 const firstDay = new Date(Date.UTC(year, month - 1, 1));
 const monthLabelDate = new Date(Date.UTC(year, month - 1, 1, 12));
@@ -99,8 +97,17 @@ const subscriptionUrl = new URL('/events/events.ics', Astro.site).toString().rep
                 const date = day ? `${currentMonth}-${String(day).padStart(2, '0')}` : '';
                 const dayEvents = calendarEvents.filter((event) => event.data.start.slice(0, 10) === date);
                 return (
-                  <div class="min-h-32 border-b border-r border-gray-200 p-2 dark:border-slate-700">
-                    {day && <p class="text-sm font-semibold">{day}</p>}
+                  <div
+                    class:list={[
+                      'min-h-32 border-b border-r border-gray-200 p-2 dark:border-slate-700',
+                      date === today && 'bg-blue-50 ring-2 ring-inset ring-primary dark:bg-slate-800',
+                    ]}
+                  >
+                    {day && (
+                      <p class="text-sm font-semibold" aria-current={date === today ? 'date' : undefined}>
+                        {day}
+                      </p>
+                    )}
                     <div class="mt-1 space-y-1">
                       {dayEvents.map((event) => (
                         <a
