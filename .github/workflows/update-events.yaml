@@ -120,5 +120,5 @@ jobs:
           body: |
             Automated weekly event record refresh.
             Refreshed months: ${{ env.TARGET_MONTH }} and ${{ env.NEXT_MONTH }}.
-          branch: "automation/events-${{ env.POST_DATE }}"
+          branch: "automation/events-${{ env.TARGET_MONTH }}-${{ github.run_id }}-${{ github.run_attempt }}"
           delete-branch: true
