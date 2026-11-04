@@ -45,6 +45,10 @@ const formatter = new Intl.DateTimeFormat('en-US', {
   minute: '2-digit',
   timeZone: 'America/New_York',
 });
+const formatEventRange = (event: (typeof events)[number]) => {
+  const start = formatter.format(new Date(event.data.start));
+  return event.data.end ? `${start} – ${formatter.format(new Date(event.data.end))}` : start;
+};
 ---
 
 <div class="not-prose my-8 space-y-4">
@@ -72,7 +76,7 @@ const formatter = new Intl.DateTimeFormat('en-US', {
               />
             )}
             <div class="min-w-0 flex-1">
-              <p class="text-sm text-muted dark:text-slate-400">{formatter.format(new Date(event.data.start))}</p>
+              <p class="text-sm text-muted dark:text-slate-400">{formatEventRange(event)}</p>
               {isFeaturedEvent(event) && (
                 <p class="mt-2 inline-block rounded-full bg-[#1967d2] px-2 py-1 text-xs font-bold uppercase tracking-wide text-white">
                   Featured event
