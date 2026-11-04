@@ -1,16 +1,16 @@
 ---
 import type { GetStaticPaths, InferGetStaticPropsType } from 'astro';
 import PageLayout from '~/layouts/PageLayout.astro';
-import { getAllEvents, getEventPermalink, isFeaturedEvent } from '~/utils/events';
+import { eventOccursOnDate, getAllEvents, getEventDates, getEventPermalink, isFeaturedEvent } from '~/utils/events';
 
 export const prerender = true;
 
 export const getStaticPaths = (async () => {
   const events = await getAllEvents();
-  const dates = [...new Set(events.map((event) => event.data.start.slice(0, 10)))];
+  const dates = [...new Set(events.flatMap(getEventDates))];
   return dates.map((date) => ({
     params: { date },
-    props: { date, events: events.filter((event) => event.data.start.slice(0, 10) === date) },
+    props: { date, events: events.filter((event) => eventOccursOnDate(event, date)) },
   }));
 }) satisfies GetStaticPaths;
 
@@ -23,12 +23,19 @@ const dateFormatter = new Intl.DateTimeFormat('en-US', {
   year: 'numeric',
   timeZone: 'America/New_York',
 });
-const timeFormatter = new Intl.DateTimeFormat('en-US', {
+const eventFormatter = new Intl.DateTimeFormat('en-US', {
+  weekday: 'short',
+  month: 'short',
+  day: 'numeric',
   hour: 'numeric',
   minute: '2-digit',
   timeZone: 'America/New_York',
 });
 const dateLabel = dateFormatter.format(new Date(`${date}T12:00:00Z`));
+const formatEventRange = (event: (typeof events)[number]) => {
+  const start = eventFormatter.format(new Date(event.data.start));
+  return event.data.end ? `${start} – ${eventFormatter.format(new Date(event.data.end))}` : start;
+};
 ---
 
 <PageLayout metadata={{ title: `Events on ${dateLabel}`, description: `Space Coast tech events on ${dateLabel}.` }}>
@@ -47,7 +54,7 @@ const dateLabel = dateFormatter.format(new Date(`${date}T12:00:00Z`));
                   : 'border-gray-200 dark:border-slate-700',
               ]}
             >
-              <p class="text-lg font-bold text-primary">{timeFormatter.format(new Date(event.data.start))}</p>
+              <p class="text-lg font-bold text-primary">{formatEventRange(event)}</p>
               {isFeaturedEvent(event) && (
                 <p class="mt-2 inline-block rounded-full bg-[#1967d2] px-2 py-1 text-xs font-bold uppercase tracking-wide text-white">
                   Featured event
