@@ -11,6 +11,8 @@ export const getEventAnchorId = (event: Event) => `event-${getEventDate(event)}-
 export const isSpaceCoastDevsEvent = (event: Event) =>
   event.data.organizer.name === 'Space Coast Devs' || event.data.organizer.url.includes('space-coast-devs');
 
+export const isFeaturedEvent = (event: Event) => event.data.featured === true;
+
 export const getEventCostLabel = (event: Event) => {
   const cost = event.data.cost;
   if (!cost) return undefined;

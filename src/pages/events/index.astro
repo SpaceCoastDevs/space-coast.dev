@@ -5,6 +5,7 @@ import {
   getEventAnchorId,
   getEventCostLabel,
   getEventPermalink,
+  isFeaturedEvent,
   isSpaceCoastDevsEvent,
 } from '~/utils/events';
 
@@ -113,9 +114,11 @@ const subscriptionUrl = new URL('/events/events.ics', Astro.site).toString().rep
                         <a
                           class:list={[
                             'block rounded px-2 py-1 text-xs hover:underline',
-                            isSpaceCoastDevsEvent(event)
-                              ? 'bg-primary font-bold text-white ring-1 ring-primary'
-                              : 'bg-blue-50 text-primary dark:bg-slate-800',
+                            isFeaturedEvent(event)
+                              ? 'bg-[#1967d2] font-bold text-white ring-2 ring-[#f9ab00]'
+                              : isSpaceCoastDevsEvent(event)
+                                ? 'bg-primary font-bold text-white ring-1 ring-primary'
+                                : 'bg-blue-50 text-primary dark:bg-slate-800',
                           ]}
                           href={getEventPermalink(event)}
                         >
@@ -168,9 +171,11 @@ const subscriptionUrl = new URL('/events/events.ics', Astro.site).toString().rep
                 tabindex="-1"
                 class:list={[
                   'rounded-lg border p-5',
-                  isSpaceCoastDevsEvent(event)
-                    ? 'border-primary bg-blue-50 ring-1 ring-primary/30 dark:bg-slate-800'
-                    : 'border-gray-200 dark:border-slate-700',
+                  isFeaturedEvent(event)
+                    ? 'border-[#1967d2] bg-blue-50 ring-2 ring-[#1967d2]/40 dark:bg-blue-950/30'
+                    : isSpaceCoastDevsEvent(event)
+                      ? 'border-primary bg-blue-50 ring-1 ring-primary/30 dark:bg-slate-800'
+                      : 'border-gray-200 dark:border-slate-700',
                 ]}
               >
                 <div class="flex flex-col gap-4 sm:flex-row">
@@ -187,6 +192,11 @@ const subscriptionUrl = new URL('/events/events.ics', Astro.site).toString().rep
                     <time class="text-lg font-bold text-primary" datetime={event.data.start}>
                       {dateFormatter.format(new Date(event.data.start))}
                     </time>
+                    {isFeaturedEvent(event) && (
+                      <p class="mt-2 inline-block rounded-full bg-[#1967d2] px-2 py-1 text-xs font-bold uppercase tracking-wide text-white">
+                        Featured event
+                      </p>
+                    )}
                     {isSpaceCoastDevsEvent(event) && (
                       <p class="mt-2 inline-block rounded-full bg-primary px-2 py-1 text-xs font-bold uppercase tracking-wide text-white">
                         Space Coast Devs event
@@ -245,11 +255,21 @@ const subscriptionUrl = new URL('/events/events.ics', Astro.site).toString().rep
               <article
                 id={getEventAnchorId(event)}
                 tabindex="-1"
-                class="rounded-lg border border-gray-200 p-5 dark:border-slate-700"
+                class:list={[
+                  'rounded-lg border p-5',
+                  isFeaturedEvent(event)
+                    ? 'border-[#1967d2] bg-blue-50 ring-2 ring-[#1967d2]/40 dark:bg-blue-950/30'
+                    : 'border-gray-200 dark:border-slate-700',
+                ]}
               >
                 <time class="text-lg font-bold text-muted dark:text-slate-400" datetime={event.data.start}>
                   {dateFormatter.format(new Date(event.data.start))}
                 </time>
+                {isFeaturedEvent(event) && (
+                  <p class="mt-2 inline-block rounded-full bg-[#1967d2] px-2 py-1 text-xs font-bold uppercase tracking-wide text-white">
+                    Featured event
+                  </p>
+                )}
                 <h2 class="mt-2 text-xl font-semibold">
                   <a class="hover:text-primary" href={getEventPermalink(event)}>
                     {event.data.title}

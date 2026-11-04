@@ -15,6 +15,7 @@
     "seed:skills": "tsx scripts/seed-skills.ts",
     "cache:event-images": "tsx scripts/cache-event-images.ts",
     "generate:event-images": "tsx scripts/generate-event-images.ts",
+    "filter:events": "tsx scripts/filter-events.ts",
     "announce:missed": "tsx scripts/announce-missed-members.ts",
     "astro": "astro",
     "check": "npm run check:astro && npm run check:eslint && npm run check:prettier",
