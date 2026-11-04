@@ -69,7 +69,7 @@ const eventSchemaJson = JSON.stringify(eventSchema).replace(/</g, '\\u003c');
       <a class="text-sm text-primary hover:underline" href={`/events#event-${eventDate}-${data.slug}`}>← All events</a>
       {
         isFeaturedEvent(event) && (
-          <p class="mt-8 inline-block rounded-full bg-[#1967d2] px-3 py-1 text-sm font-bold uppercase tracking-wide text-white">
+          <p class="mt-4 w-fit rounded-full bg-[#1967d2] px-3 py-1 text-sm font-bold uppercase tracking-wide text-white">
             Featured event
           </p>
         )
