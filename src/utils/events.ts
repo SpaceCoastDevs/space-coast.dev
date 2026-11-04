@@ -4,16 +4,25 @@ export type Event = CollectionEntry<'event'>;
 
 export const getEventDate = (event: Event) => event.data.start.slice(0, 10);
 
-export const getEventDates = (event: Event): string[] => {
-  const startDate = getEventDate(event);
-  let endDate = event.data.end?.slice(0, 10) ?? startDate;
+const eventDateFormatter = new Intl.DateTimeFormat('en-US', {
+  timeZone: 'America/New_York',
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+});
 
-  // Treat an end exactly at midnight as exclusive of that calendar day.
-  if (event.data.end?.slice(11, 19) === '00:00:00' && endDate > startDate) {
-    const exclusiveEnd = new Date(`${endDate}T00:00:00Z`);
-    exclusiveEnd.setUTCDate(exclusiveEnd.getUTCDate() - 1);
-    endDate = exclusiveEnd.toISOString().slice(0, 10);
-  }
+const getCalendarDate = (date: Date): string => {
+  const parts = eventDateFormatter.formatToParts(date);
+  const part = (type: Intl.DateTimeFormatPartTypes) => parts.find((item) => item.type === type)?.value;
+  return `${part('year')}-${part('month')}-${part('day')}`;
+};
+
+export const getEventDates = (event: Event): string[] => {
+  const startDate = getCalendarDate(new Date(event.data.start));
+  // Subtract one millisecond so a local-midnight end excludes that calendar day.
+  let endDate = event.data.end
+    ? getCalendarDate(new Date(new Date(event.data.end).getTime() - 1))
+    : startDate;
 
   if (endDate < startDate) endDate = startDate;
 
