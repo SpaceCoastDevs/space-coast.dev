@@ -86,5 +86,7 @@ for i in range(288):
   im.save(OUT/'space-coast-devs-tonight-feed.png'); story.save(OUT/'space-coast-devs-tonight-story.png')
  if i%72==0: print(f'Rendered {i}/288 frames',flush=True)
 p1.stdin.close(); p2.stdin.close()
-assert p1.wait()==0 and p2.wait()==0
+p1.wait(); p2.wait()
+if p1.returncode != 0: raise subprocess.CalledProcessError(p1.returncode,p1.args)
+if p2.returncode != 0: raise subprocess.CalledProcessError(p2.returncode,p2.args)
 print('Finished both videos',flush=True)
