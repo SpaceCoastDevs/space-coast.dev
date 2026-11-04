@@ -207,30 +207,34 @@ const formatEventRange = (event: (typeof events)[number]) => {
                     />
                   )}
                   <div class="min-w-0 flex-1">
-                    <time class="text-lg font-bold text-primary" datetime={event.data.start}>
+                    <time class="block text-lg font-bold text-primary" datetime={event.data.start}>
                       {formatEventRange(event)}
                     </time>
-                    {isFeaturedEvent(event) && (
-                      <p class="mt-2 inline-block rounded-full bg-[#1967d2] px-2 py-1 text-xs font-bold uppercase tracking-wide text-white">
-                        Featured event
-                      </p>
-                    )}
-                    {isSpaceCoastDevsEvent(event) && (
-                      <p class="mt-2 inline-block rounded-full bg-primary px-2 py-1 text-xs font-bold uppercase tracking-wide text-white">
-                        Space Coast Devs event
-                      </p>
-                    )}
-                    {event.data.cost && (
-                      <p
-                        class:list={[
-                          'mt-2 inline-block rounded-full px-2 py-1 text-xs font-bold uppercase tracking-wide',
-                          event.data.cost.type === 'free'
-                            ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-200'
-                            : 'bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-200',
-                        ]}
-                      >
-                        {getEventCostLabel(event)}
-                      </p>
+                    {(isFeaturedEvent(event) || isSpaceCoastDevsEvent(event) || event.data.cost) && (
+                      <div class="mt-2 flex flex-wrap items-center gap-2">
+                        {isFeaturedEvent(event) && (
+                          <span class="rounded-full bg-[#1967d2] px-2 py-1 text-xs font-bold uppercase tracking-wide text-white">
+                            Featured event
+                          </span>
+                        )}
+                        {isSpaceCoastDevsEvent(event) && (
+                          <span class="rounded-full bg-primary px-2 py-1 text-xs font-bold uppercase tracking-wide text-white">
+                            Space Coast Devs event
+                          </span>
+                        )}
+                        {event.data.cost && (
+                          <span
+                            class:list={[
+                              'rounded-full px-2 py-1 text-xs font-bold uppercase tracking-wide',
+                              event.data.cost.type === 'free'
+                                ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-200'
+                                : 'bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-200',
+                            ]}
+                          >
+                            {getEventCostLabel(event)}
+                          </span>
+                        )}
+                      </div>
                     )}
                     <h2 class="mt-2 text-xl font-semibold">
                       <a class="hover:text-primary" href={getEventPermalink(event)}>
