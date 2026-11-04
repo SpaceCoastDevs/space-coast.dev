@@ -17,6 +17,7 @@ type Props = InferGetStaticPropsType<typeof getStaticPaths>;
 const { event } = Astro.props as Props;
 const { data } = event;
 const start = new Date(data.start);
+const end = data.end ? new Date(data.end) : undefined;
 const descriptionParagraphs = data.description.split(/\n{2,}/);
 const formatter = new Intl.DateTimeFormat('en-US', {
   weekday: 'long',
@@ -81,7 +82,19 @@ const eventSchemaJson = JSON.stringify(eventSchema).replace(/</g, '\\u003c');
       >
         Date & time
       </p>
-      <p class="mt-1 text-2xl font-bold text-primary sm:text-3xl">{formatter.format(start)}</p>
+      <p class="mt-1 text-2xl font-bold text-primary sm:text-3xl">
+        <time datetime={data.start}>{formatter.format(start)}</time>
+        {
+          end && (
+            <>
+              <>
+                <span aria-hidden="true"> – </span>
+                <time datetime={data.end}>{formatter.format(end)}</time>
+              </>
+            </>
+          )
+        }
+      </p>
       <h1 class="mt-2 text-4xl font-bold tracking-tight">{data.title}</h1>
       {
         data.cost && (

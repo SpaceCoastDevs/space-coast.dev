@@ -1,9 +1,11 @@
 ---
 import PageLayout from '~/layouts/PageLayout.astro';
 import {
+  eventOccursOnDate,
   getAllEvents,
   getEventAnchorId,
   getEventCostLabel,
+  getEventDates,
   getEventPermalink,
   isFeaturedEvent,
   isSpaceCoastDevsEvent,
@@ -37,7 +39,7 @@ const upcomingEvents = events.filter((event) => {
 });
 const pastEvents = events.filter((event) => new Date(event.data.start) < now);
 const currentMonth = today.slice(0, 7);
-const calendarEvents = events.filter((event) => event.data.start.slice(0, 7) === currentMonth);
+const calendarEvents = events.filter((event) => getEventDates(event).some((date) => date.startsWith(currentMonth)));
 const [year, month] = currentMonth.split('-').map(Number);
 const firstDay = new Date(Date.UTC(year, month - 1, 1));
 const monthLabelDate = new Date(Date.UTC(year, month - 1, 1, 12));
@@ -65,6 +67,10 @@ const timeFormatter = new Intl.DateTimeFormat('en-US', {
   timeZone: 'America/New_York',
 });
 const subscriptionUrl = new URL('/events/events.ics', Astro.site).toString().replace(/^https?/, 'webcal');
+const formatEventRange = (event: (typeof events)[number]) => {
+  const start = dateFormatter.format(new Date(event.data.start));
+  return event.data.end ? `${start} – ${dateFormatter.format(new Date(event.data.end))}` : start;
+};
 ---
 
 <PageLayout
@@ -96,7 +102,7 @@ const subscriptionUrl = new URL('/events/events.ics', Astro.site).toString().rep
             {
               calendarDays.map((day) => {
                 const date = day ? `${currentMonth}-${String(day).padStart(2, '0')}` : '';
-                const dayEvents = calendarEvents.filter((event) => event.data.start.slice(0, 10) === date);
+                const dayEvents = calendarEvents.filter((event) => eventOccursOnDate(event, date));
                 return (
                   <div
                     class:list={[
@@ -110,22 +116,34 @@ const subscriptionUrl = new URL('/events/events.ics', Astro.site).toString().rep
                       </p>
                     )}
                     <div class="mt-1 space-y-1">
-                      {dayEvents.map((event) => (
-                        <a
-                          class:list={[
-                            'block rounded px-2 py-1 text-xs hover:underline',
-                            isFeaturedEvent(event)
-                              ? 'bg-[#1967d2] font-bold text-white ring-2 ring-[#f9ab00]'
-                              : isSpaceCoastDevsEvent(event)
-                                ? 'bg-primary font-bold text-white ring-1 ring-primary'
-                                : 'bg-blue-50 text-primary dark:bg-slate-800',
-                          ]}
-                          href={getEventPermalink(event)}
-                        >
-                          <span class="font-semibold">{timeFormatter.format(new Date(event.data.start))}</span>{' '}
-                          {event.data.title}
-                        </a>
-                      ))}
+                      {dayEvents.map((event) => {
+                        const eventDates = getEventDates(event);
+                        const isFirstDay = date === eventDates[0];
+                        const isLastDay = date === eventDates[eventDates.length - 1];
+                        const timeLabel =
+                          eventDates.length === 1
+                            ? timeFormatter.format(new Date(event.data.start))
+                            : isFirstDay
+                              ? `Starts ${timeFormatter.format(new Date(event.data.start))}`
+                              : isLastDay && event.data.end
+                                ? `Through ${timeFormatter.format(new Date(event.data.end))}`
+                                : 'All day';
+                        return (
+                          <a
+                            class:list={[
+                              'block rounded px-2 py-1 text-xs hover:underline',
+                              isFeaturedEvent(event)
+                                ? 'bg-[#1967d2] font-bold text-white ring-2 ring-[#f9ab00]'
+                                : isSpaceCoastDevsEvent(event)
+                                  ? 'bg-primary font-bold text-white ring-1 ring-primary'
+                                  : 'bg-blue-50 text-primary dark:bg-slate-800',
+                            ]}
+                            href={getEventPermalink(event)}
+                          >
+                            <span class="font-semibold">{timeLabel}</span> {event.data.title}
+                          </a>
+                        );
+                      })}
                     </div>
                   </div>
                 );
@@ -190,7 +208,7 @@ const subscriptionUrl = new URL('/events/events.ics', Astro.site).toString().rep
                   )}
                   <div class="min-w-0 flex-1">
                     <time class="text-lg font-bold text-primary" datetime={event.data.start}>
-                      {dateFormatter.format(new Date(event.data.start))}
+                      {formatEventRange(event)}
                     </time>
                     {isFeaturedEvent(event) && (
                       <p class="mt-2 inline-block rounded-full bg-[#1967d2] px-2 py-1 text-xs font-bold uppercase tracking-wide text-white">
@@ -263,7 +281,7 @@ const subscriptionUrl = new URL('/events/events.ics', Astro.site).toString().rep
                 ]}
               >
                 <time class="text-lg font-bold text-muted dark:text-slate-400" datetime={event.data.start}>
-                  {dateFormatter.format(new Date(event.data.start))}
+                  {formatEventRange(event)}
                 </time>
                 {isFeaturedEvent(event) && (
                   <p class="mt-2 inline-block rounded-full bg-[#1967d2] px-2 py-1 text-xs font-bold uppercase tracking-wide text-white">
