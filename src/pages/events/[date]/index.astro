@@ -1,7 +1,7 @@
 ---
 import type { GetStaticPaths, InferGetStaticPropsType } from 'astro';
 import PageLayout from '~/layouts/PageLayout.astro';
-import { getAllEvents, getEventPermalink } from '~/utils/events';
+import { getAllEvents, getEventPermalink, isFeaturedEvent } from '~/utils/events';
 
 export const prerender = true;
 
@@ -39,8 +39,20 @@ const dateLabel = dateFormatter.format(new Date(`${date}T12:00:00Z`));
       <div class="mt-8 space-y-4">
         {
           events.map((event) => (
-            <article class="rounded-lg border border-gray-200 p-5 dark:border-slate-700">
+            <article
+              class:list={[
+                'rounded-lg border p-5',
+                isFeaturedEvent(event)
+                  ? 'border-[#1967d2] bg-blue-50 ring-2 ring-[#1967d2]/40 dark:bg-blue-950/30'
+                  : 'border-gray-200 dark:border-slate-700',
+              ]}
+            >
               <p class="text-lg font-bold text-primary">{timeFormatter.format(new Date(event.data.start))}</p>
+              {isFeaturedEvent(event) && (
+                <p class="mt-2 inline-block rounded-full bg-[#1967d2] px-2 py-1 text-xs font-bold uppercase tracking-wide text-white">
+                  Featured event
+                </p>
+              )}
               <h2 class="mt-2 text-xl font-semibold">
                 <a class="hover:text-primary" href={getEventPermalink(event)}>
                   {event.data.title}
