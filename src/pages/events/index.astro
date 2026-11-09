@@ -11,6 +11,8 @@ import {
   isSpaceCoastDevsEvent,
 } from '~/utils/events';
 
+export const prerender = false;
+
 const events = await getAllEvents();
 const easternDate = (date: Date): string => {
   const parts = new Intl.DateTimeFormat('en-CA', {
