@@ -1,0 +1,20 @@
+{
+  "slug": "december-space-coast-devs-meetup",
+  "title": "December Space Coast Devs Meetup",
+  "start": "2026-12-16T18:00:00-05:00",
+  "end": "2026-12-16T20:00:00-05:00",
+  "attendanceMode": "inPerson",
+  "organizer": {
+    "name": "Protowork•Studio",
+    "url": "https://www.eventbrite.com/o/protoworkstudio-76945735013"
+  },
+  "sourceUrl": "https://www.eventbrite.com/e/december-space-coast-devs-meetup-tickets-2004500909179",
+  "description": "Meet local developers, designers, and tech enthusiasts for an evening of networking, tech talks, and project sharing at Protowork•Studio.",
+  "imageUrl": "/event-images/source-aff06d31626a7edf.jpg",
+  "cost": {
+    "type": "free",
+    "amount": 0,
+    "currency": "USD"
+  },
+  "tags": ["community"]
+}

@@ -20,9 +20,7 @@ const getCalendarDate = (date: Date): string => {
 export const getEventDates = (event: Event): string[] => {
   const startDate = getCalendarDate(new Date(event.data.start));
   // Subtract one millisecond so a local-midnight end excludes that calendar day.
-  let endDate = event.data.end
-    ? getCalendarDate(new Date(new Date(event.data.end).getTime() - 1))
-    : startDate;
+  let endDate = event.data.end ? getCalendarDate(new Date(new Date(event.data.end).getTime() - 1)) : startDate;
 
   if (endDate < startDate) endDate = startDate;
 
