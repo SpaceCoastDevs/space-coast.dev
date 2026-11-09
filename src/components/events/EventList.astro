@@ -4,6 +4,7 @@ import {
   getEventsForDateRange,
   getEventPermalink,
   getEventsForMonth,
+  isFeaturedEvent,
   isSpaceCoastDevsEvent,
 } from '~/utils/events';
 
@@ -44,6 +45,10 @@ const formatter = new Intl.DateTimeFormat('en-US', {
   minute: '2-digit',
   timeZone: 'America/New_York',
 });
+const formatEventRange = (event: (typeof events)[number]) => {
+  const start = formatter.format(new Date(event.data.start));
+  return event.data.end ? `${start} – ${formatter.format(new Date(event.data.end))}` : start;
+};
 ---
 
 <div class="not-prose my-8 space-y-4">
@@ -53,9 +58,11 @@ const formatter = new Intl.DateTimeFormat('en-US', {
         <article
           class:list={[
             'rounded-lg border p-5',
-            isSpaceCoastDevsEvent(event)
-              ? 'border-primary bg-blue-50 ring-1 ring-primary/30 dark:bg-slate-800'
-              : 'border-gray-200 dark:border-slate-700',
+            isFeaturedEvent(event)
+              ? 'border-[#1967d2] bg-blue-50 ring-2 ring-[#1967d2]/40 dark:bg-blue-950/30'
+              : isSpaceCoastDevsEvent(event)
+                ? 'border-primary bg-blue-50 ring-1 ring-primary/30 dark:bg-slate-800'
+                : 'border-gray-200 dark:border-slate-700',
           ]}
         >
           <div class="flex flex-col gap-4 sm:flex-row">
@@ -69,23 +76,32 @@ const formatter = new Intl.DateTimeFormat('en-US', {
               />
             )}
             <div class="min-w-0 flex-1">
-              <p class="text-sm text-muted dark:text-slate-400">{formatter.format(new Date(event.data.start))}</p>
-              {isSpaceCoastDevsEvent(event) && (
-                <p class="mt-2 inline-block rounded-full bg-primary px-2 py-1 text-xs font-bold uppercase tracking-wide text-white">
-                  Space Coast Devs event
-                </p>
-              )}
-              {event.data.cost && (
-                <p
-                  class:list={[
-                    'mt-2 inline-block rounded-full px-2 py-1 text-xs font-bold uppercase tracking-wide',
-                    event.data.cost.type === 'free'
-                      ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-200'
-                      : 'bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-200',
-                  ]}
-                >
-                  {getEventCostLabel(event)}
-                </p>
+              <p class="text-sm text-muted dark:text-slate-400">{formatEventRange(event)}</p>
+              {(isFeaturedEvent(event) || isSpaceCoastDevsEvent(event) || event.data.cost) && (
+                <div class="mt-2 flex flex-wrap items-center gap-2">
+                  {isFeaturedEvent(event) && (
+                    <span class="rounded-full bg-[#1967d2] px-2 py-1 text-xs font-bold uppercase tracking-wide text-white">
+                      Featured event
+                    </span>
+                  )}
+                  {isSpaceCoastDevsEvent(event) && (
+                    <span class="rounded-full bg-primary px-2 py-1 text-xs font-bold uppercase tracking-wide text-white">
+                      Space Coast Devs event
+                    </span>
+                  )}
+                  {event.data.cost && (
+                    <span
+                      class:list={[
+                        'rounded-full px-2 py-1 text-xs font-bold uppercase tracking-wide',
+                        event.data.cost.type === 'free'
+                          ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-200'
+                          : 'bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-200',
+                      ]}
+                    >
+                      {getEventCostLabel(event)}
+                    </span>
+                  )}
+                </div>
               )}
               <h2 class="mt-1 text-xl font-semibold">
                 <a class="hover:text-primary" href={getEventPermalink(event)}>

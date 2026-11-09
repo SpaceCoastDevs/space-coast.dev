@@ -1,0 +1,28 @@
+{
+  "slug": "devfest-florida-hackathon-2026",
+  "title": "DevFest Florida Hackathon 2026",
+  "start": "2026-11-06T17:00:00-05:00",
+  "end": "2026-11-08T17:00:00-05:00",
+  "attendanceMode": "inPerson",
+  "location": {
+    "name": "UCF Downtown (Dr. Phillips Academic Commons)",
+    "address": "500 W. Livingston Street",
+    "city": "Orlando",
+    "region": "FL",
+    "postalCode": "32801"
+  },
+  "organizer": {
+    "name": "DevFest Florida",
+    "url": "https://devfestflorida.com/"
+  },
+  "sourceUrl": "https://devfestflorida.com/",
+  "imageUrl": "/event-images/source-4a92170978e8f6ab.webp",
+  "cost": {
+    "type": "paid",
+    "amount": 21.3,
+    "currency": "USD"
+  },
+  "description": "Build with AI and leave with a project, practical skills, and new collaborators. This in-person, three-day hackathon brings developers, designers, students, and builders together to create with Google's generative AI technologies. All backgrounds and skill levels are welcome, and participants may arrive solo or with a team.",
+  "tags": ["development", "artificial intelligence", "hackathon"],
+  "featured": true
+}

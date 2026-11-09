@@ -98,6 +98,7 @@ const eventCollection = defineCollection({
       .optional(),
     description: z.string().min(1),
     tags: z.array(z.string().min(1)).min(1),
+    featured: z.boolean().optional(),
   }),
 });
 
