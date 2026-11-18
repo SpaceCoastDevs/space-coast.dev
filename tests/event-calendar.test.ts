@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { test } from 'node:test';
+import { eventSchema } from '../src/utils/event-schema';
 import { getEventCalendarUid as eventUid, type CalendarIdentity } from '../src/utils/event-calendar';
 
 const getEventCalendarUid = (data: CalendarIdentity) => eventUid({ id: 'test', data });
@@ -81,4 +82,16 @@ test('every existing record keeps an independent UID; new ambiguous records fail
 
 test('unrecognized source requires explicit immutable identity instead of mutable dates', () => {
   assert.throws(() => getEventCalendarUid({ sourceUrl: 'https://example.com/' }), /calendarId/);
+});
+
+test('the event collection schema preserves manual calendar IDs for unknown providers', () => {
+  const sample = {
+    ...meetup('2026-11-18'),
+    sourceUrl: 'https://example.org/manual-event',
+    calendarId: 'local-demo-17',
+  };
+  const data = eventSchema.parse(sample);
+  assert.equal(data.calendarId, sample.calendarId);
+  assert.equal(getEventCalendarUid(data), getEventCalendarUid(sample));
+  assert.equal(eventSchema.safeParse({ ...sample, calendarId: '' }).success, false);
 });
