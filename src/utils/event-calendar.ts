@@ -3,12 +3,14 @@ import identityOverrides from '../data/event-calendar-identities.json';
 
 export interface CalendarIdentity {
   sourceUrl: string;
+  sourceIdentity?: { provider: 'meetup' | 'eventbrite' | 'luma'; id: string };
   calendarId?: string;
 }
 
 /** Provider occurrence ID, independent of title, date, URL slug, and tracking parameters. */
-export const getCalendarIdentity = ({ sourceUrl, calendarId }: CalendarIdentity): string => {
+export const getCalendarIdentity = ({ sourceUrl, sourceIdentity, calendarId }: CalendarIdentity): string => {
   if (calendarId) return JSON.stringify(['local', calendarId]);
+  if (sourceIdentity) return JSON.stringify([sourceIdentity.provider, sourceIdentity.id]);
   const url = new URL(sourceUrl);
   const host = url.hostname.replace(/^www\./, '');
   const meetupId = host === 'meetup.com' && url.pathname.match(/\/events\/([^/]+)/)?.[1];

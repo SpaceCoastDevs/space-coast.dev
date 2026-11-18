@@ -87,6 +87,12 @@ const eventCollection = defineCollection({
       url: z.string().url(),
     }),
     sourceUrl: z.string().url(),
+    sourceIdentity: z
+      .object({
+        provider: z.enum(['meetup', 'eventbrite', 'luma']),
+        id: z.string().min(1),
+      })
+      .optional(),
     imageUrl: z.union([z.string().url(), z.string().startsWith('/')]).optional(),
     cost: z
       .object({

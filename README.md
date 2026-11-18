@@ -20,7 +20,9 @@ https://space-coast.dev/discord
 
 The feed and individual ICS downloads share provider-qualified occurrence UIDs
 (Meetup event ID, Eventbrite ticket ID, or Luma event path). Dates, titles, and
-presentation slugs are not identity. Manual events and reused/ambiguous provider
+presentation slugs are not identity. The feed uses the importer's optional
+`sourceIdentity` field when available and still recognizes legacy provider URLs
+with the same IDs. Manual events and reused/ambiguous provider
 IDs have entries in `src/data/event-calendar-identities.json`: the key is the
 Astro content record ID (relative path without `.json`), and the value is immutable.
 Preserve the value and move the key when renaming or moving a record; a new
