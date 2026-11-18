@@ -1,16 +1,25 @@
 ---
-
+const expiresAt = '2026-11-19T05:00:00Z';
 ---
 
-<div
-  class="relative flex flex-col items-center justify-center gap-1 overflow-hidden bg-[#1967d2] px-3 py-2 text-center text-sm text-white dark:border-b dark:border-blue-400/30 dark:bg-[#1557b0] sm:flex-row sm:gap-4"
->
-  <p>
-    <span class="mr-1 inline-block rounded bg-white/20 px-1.5 py-0.5 text-xs font-bold tracking-wide rtl:ml-1 rtl:mr-0"
-      >THIS WEEK</span
+{
+  Date.now() < Date.parse(expiresAt) && (
+    <aside
+      data-meetup-notice-expires={expiresAt}
+      aria-label="Meetup cancellation"
+      class="bg-rose-800 px-4 py-3 text-center text-sm text-white"
     >
-    <a class="font-semibold hover:underline" href="/events/2026-11-18/space-coast-devs-monthly-meetup">
-      Space Coast Devs Monthly Meetup · Nov 18, 6:00 PM →
-    </a>
-  </p>
-</div>
+      <a class="font-bold underline underline-offset-4" href="/events/2026-11-18/space-coast-devs-monthly-meetup">
+        Nov 18 Space Coast Devs meetup canceled due to storms
+      </a>
+      <span class="ml-1">Stay dry out there!</span>
+    </aside>
+  )
+}
+
+<script>
+  for (const notice of document.querySelectorAll<HTMLElement>('[data-meetup-notice-expires]')) {
+    const expires = Date.parse(notice.dataset.meetupNoticeExpires ?? '');
+    if (Number.isFinite(expires) && Date.now() >= expires) notice.hidden = true;
+  }
+</script>
