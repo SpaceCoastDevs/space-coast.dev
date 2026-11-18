@@ -24,7 +24,9 @@
     "check:prettier": "prettier --check .",
     "fix": "npm run fix:eslint && npm run fix:prettier",
     "fix:eslint": "eslint --fix .",
-    "fix:prettier": "prettier -w ."
+    "fix:prettier": "prettier -w .",
+    "test:calendar": "node --import tsx --test tests/event-calendar.test.ts",
+    "test:calendar:built": "node --import tsx --test tests/event-calendar-built.test.ts"
   },
   "dependencies": {
     "@astrojs/netlify": "^5.5.4",
