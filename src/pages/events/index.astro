@@ -1,4 +1,5 @@
 ---
+import { isStormCancelledEvent } from '~/utils/event-cancellation';
 import PageLayout from '~/layouts/PageLayout.astro';
 import {
   eventOccursOnDate,
@@ -142,7 +143,13 @@ const formatEventRange = (event: (typeof events)[number]) => {
                             ]}
                             href={getEventPermalink(event)}
                           >
-                            <span class="font-semibold">{timeLabel}</span> {event.data.title}
+                            <span class="font-semibold">{timeLabel}</span>{' '}
+                            {isStormCancelledEvent(event) && (
+                              <span class="rounded bg-rose-100 px-1 font-bold text-rose-900 dark:bg-rose-950 dark:text-rose-100">
+                                Canceled:{' '}
+                              </span>
+                            )}
+                            {event.data.title}
                           </a>
                         );
                       })}
@@ -240,6 +247,9 @@ const formatEventRange = (event: (typeof events)[number]) => {
                     )}
                     <h2 class="mt-2 text-xl font-semibold">
                       <a class="hover:text-primary" href={getEventPermalink(event)}>
+                        {isStormCancelledEvent(event) && (
+                          <span class="font-bold text-rose-700 dark:text-rose-300">Canceled: </span>
+                        )}
                         {event.data.title}
                       </a>
                     </h2>
@@ -251,9 +261,11 @@ const formatEventRange = (event: (typeof events)[number]) => {
                       <a class="btn-secondary" href={getEventPermalink(event)}>
                         See details
                       </a>
-                      <a class="btn-primary" href={`${getEventPermalink(event)}.ics`}>
-                        Add to calendar
-                      </a>
+                      {!isStormCancelledEvent(event) && (
+                        <a class="btn-primary" href={`${getEventPermalink(event)}.ics`}>
+                          Add to calendar
+                        </a>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -296,6 +308,9 @@ const formatEventRange = (event: (typeof events)[number]) => {
                 )}
                 <h2 class="mt-2 text-xl font-semibold">
                   <a class="hover:text-primary" href={getEventPermalink(event)}>
+                    {isStormCancelledEvent(event) && (
+                      <span class="font-bold text-rose-700 dark:text-rose-300">Canceled: </span>
+                    )}
                     {event.data.title}
                   </a>
                 </h2>

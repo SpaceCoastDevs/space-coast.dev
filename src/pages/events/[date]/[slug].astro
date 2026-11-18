@@ -1,4 +1,5 @@
 ---
+import { isStormCancelledEvent } from '~/utils/event-cancellation';
 import type { GetStaticPaths, InferGetStaticPropsType } from 'astro';
 import PageLayout from '~/layouts/PageLayout.astro';
 import { getAllEvents, getEventCostLabel, isFeaturedEvent } from '~/utils/events';
@@ -16,9 +17,7 @@ export const getStaticPaths = (async () => {
 type Props = InferGetStaticPropsType<typeof getStaticPaths>;
 const { event } = Astro.props as Props;
 const { data } = event;
-const isStormCancellation =
-  data.start.startsWith('2026-11-18') &&
-  ['space-coast-devs-monthly-meetup', 'november-space-coast-devs-meetup'].includes(data.slug);
+const isStormCancellation = isStormCancelledEvent(event);
 const cancellationMessage = 'Due to the storms we are cancelling the meetup today. Stay dry out there!';
 const cancellationGraphic = '/event-images/2026-11-18-meetup-canceled.webp';
 const start = new Date(data.start);
