@@ -1,13 +1,14 @@
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
 import { mkdir, mkdtemp, readdir, rm, writeFile } from 'node:fs/promises';
+import { createRequire } from 'node:module';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { test } from 'node:test';
 import { fileURLToPath } from 'node:url';
 
 const script = fileURLToPath(new URL('../scripts/filter-events.ts', import.meta.url));
-const tsx = import.meta.resolve('tsx');
+const tsx = createRequire(import.meta.url).resolve('tsx');
 const meetup = (id: string) => `https://www.meetup.com/melbourne-makerspace-florida-usa/events/${id}/`;
 
 test('the post-import filter removes only the canceled Meetup occurrences and still filters nonlocal Network Launch', async () => {
