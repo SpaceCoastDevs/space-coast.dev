@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
 import { getAllEvents } from '~/utils/events';
+import { getEventCalendarUid } from '~/utils/event-calendar';
 
 export const prerender = true;
 
@@ -18,7 +19,8 @@ export const GET: APIRoute = async () => {
     'VERSION:2.0',
     'PRODID:-//Space Coast Devs//Events//EN',
     'X-WR-CALNAME:Space Coast Tech Events',
-    ...events.flatMap(({ data }) => {
+    ...events.flatMap((event) => {
+      const { data } = event;
       const location = data.location
         ? [data.location.name, data.location.address, data.location.city, data.location.region]
             .filter(Boolean)
@@ -26,7 +28,7 @@ export const GET: APIRoute = async () => {
         : '';
       return [
         'BEGIN:VEVENT',
-        `UID:${data.slug}@space-coast.dev`,
+        `UID:${getEventCalendarUid(event)}`,
         `DTSTAMP:${formatIcsDate(new Date().toISOString())}`,
         `DTSTART:${formatIcsDate(data.start)}`,
         ...(data.end ? [`DTEND:${formatIcsDate(data.end)}`] : []),

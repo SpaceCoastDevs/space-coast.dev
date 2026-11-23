@@ -1,5 +1,6 @@
 import type { APIRoute, GetStaticPaths } from 'astro';
 import { getAllEvents } from '~/utils/events';
+import { getEventCalendarUid } from '~/utils/event-calendar';
 
 export const prerender = true;
 
@@ -30,7 +31,7 @@ export const GET: APIRoute = ({ props }) => {
     'VERSION:2.0',
     'PRODID:-//Space Coast Devs//Events//EN',
     'BEGIN:VEVENT',
-    `UID:${data.slug}@space-coast.dev`,
+    `UID:${getEventCalendarUid(event)}`,
     `DTSTAMP:${formatIcsDate(new Date().toISOString())}`,
     `DTSTART:${formatIcsDate(data.start)}`,
     ...(data.end ? [`DTEND:${formatIcsDate(data.end)}`] : []),
