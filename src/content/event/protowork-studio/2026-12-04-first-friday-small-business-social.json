@@ -1,0 +1,24 @@
+{
+  "sourceIdentity": {
+    "provider": "eventbrite",
+    "id": "2005200810603"
+  },
+  "slug": "first-friday-small-business-social",
+  "title": "First Friday Small Business Social",
+  "start": "2026-12-04T17:30:00-05:00",
+  "end": "2026-12-04T19:30:00-05:00",
+  "attendanceMode": "inPerson",
+  "organizer": {
+    "name": "Protowork•Studio",
+    "url": "https://www.eventbrite.com/o/protoworkstudio-76945735013"
+  },
+  "sourceUrl": "https://www.eventbrite.com/e/first-friday-small-business-social-tickets-2005200810603",
+  "description": "Meet Space Coast small business owners, freelancers, remote workers, and neighbors face-to-face at our First Friday social in West Melbourne",
+  "imageUrl": "/event-images/source-6458812f0ed69f12.jpg",
+  "cost": {
+    "type": "free",
+    "amount": 0,
+    "currency": "USD"
+  },
+  "tags": ["community"]
+}

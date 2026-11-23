@@ -14,5 +14,9 @@
   "cost": {
     "type": "free"
   },
-  "tags": ["community"]
+  "tags": ["community"],
+  "sourceIdentity": {
+    "provider": "meetup",
+    "id": "317334385"
+  }
 }
