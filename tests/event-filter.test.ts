@@ -27,9 +27,9 @@ test('the post-import filter removes only the canceled Meetup occurrences and st
       '2026-11-19-pottery': '317211491',
       '2026-11-19-open-house-3d-printing': '317212063',
       '2026-11-19-open-house-laser-cutting': '317212533',
-      '2026-12-03-pottery': '317109146',
-      '2026-12-03-open-house-3d-printing': '317109670',
-      '2026-12-03-open-house-laser-cutting': '317110096',
+      '2026-12-03-pottery': '317402568',
+      '2026-12-03-open-house-3d-printing': '317422129',
+      '2026-12-03-open-house-laser-cutting': '317422566',
     };
     const otherHost = 'https://www.example.org/events/317319719/';
     const network = { organizer: { name: 'Network Launch' } };
