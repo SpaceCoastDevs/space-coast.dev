@@ -1,6 +1,6 @@
 import type { APIRoute } from 'astro';
 import { getAllEvents } from '~/utils/events';
-import { getEventCalendarUid } from '~/utils/event-calendar';
+import { getEventCalendarUid, isInAggregateCalendarFeed } from '~/utils/event-calendar';
 
 export const prerender = true;
 
@@ -13,7 +13,7 @@ const formatIcsDate = (value: string) =>
     .replace(/\.\d{3}/, '');
 
 export const GET: APIRoute = async () => {
-  const events = await getAllEvents();
+  const events = (await getAllEvents()).filter(({ data }) => isInAggregateCalendarFeed(data));
   const calendar = [
     'BEGIN:VCALENDAR',
     'VERSION:2.0',

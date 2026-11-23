@@ -49,5 +49,11 @@ After building, `pnpm test:calendar:built` verifies generated feed/download pari
 Unknown providers fail without an override rather than silently using mutable
 dates/titles. Both ICS routes use the same UID helper.
 
+For the Dec 16, 2026 Space Coast Devs meetup, the aggregate feed only publishes
+Meetup occurrence `316189328`. The exact venue mirror, Eventbrite `2004500909179`,
+is filtered from the aggregate feed by provider identity in
+`src/utils/event-calendar.ts`, not deleted during refresh. Its event page, RSVP
+link, and individual calendar download remain available.
+
 This corrects previously shared UIDs. Existing subscribers may need to remove
 stale entries or re-add the feed once; calendar-client migration behavior varies.
