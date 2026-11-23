@@ -3,7 +3,11 @@ import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { test } from 'node:test';
 import { eventSchema } from '../src/utils/event-schema';
-import { getEventCalendarUid as eventUid, type CalendarIdentity } from '../src/utils/event-calendar';
+import {
+  getEventCalendarUid as eventUid,
+  isInAggregateCalendarFeed,
+  type CalendarIdentity,
+} from '../src/utils/event-calendar';
 
 const getEventCalendarUid = (data: CalendarIdentity) => eventUid({ id: 'test', data });
 
@@ -60,6 +64,27 @@ test('same ID across providers is not the same calendar event', () => {
     getEventCalendarUid({ sourceUrl: 'https://www.meetup.com/group/events/123/' }),
     getEventCalendarUid({ sourceUrl: 'https://www.eventbrite.com/e/title-tickets-123' })
   );
+});
+
+test('aggregate exclusion survives importer metadata and URL changes but is occurrence- and provider-specific', () => {
+  const id = '2004500909179';
+  const sourceUrl = `https://eventbrite.com/e/renamed-tickets-${id}/?utm_source=refresh`;
+  assert.equal(isInAggregateCalendarFeed({ sourceUrl }), false);
+  assert.equal(
+    isInAggregateCalendarFeed({
+      sourceUrl: 'https://eventbrite.com/new-url-format',
+      sourceIdentity: { provider: 'eventbrite', id },
+      calendarId: 'manual-uid-override',
+    }),
+    false
+  );
+  assert.equal(isInAggregateCalendarFeed({ sourceUrl: `https://meetup.com/group/events/${id}` }), true);
+  assert.equal(isInAggregateCalendarFeed({ sourceUrl: 'https://eventbrite.com/e/other-tickets-2004500909180' }), true);
+  assert.equal(
+    isInAggregateCalendarFeed({ sourceUrl: 'https://example.com/manual-event', calendarId: 'manual' }),
+    true
+  );
+  assert.equal(isInAggregateCalendarFeed(meetup('2026-12-16')), true);
 });
 
 test('explicit IDs survive file/date/title/URL changes and distinguish ambiguous listings', () => {

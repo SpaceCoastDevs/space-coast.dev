@@ -7,14 +7,21 @@ const read = (path: string) => readFileSync(new URL(path, root), 'utf8');
 const uid = (calendar: string) => calendar.match(/^UID:(.+)\r?$/m)?.[1].trim();
 const feed = read('events.ics');
 const feedUids = [...feed.matchAll(/^UID:(.+)\r?$/gm)].map((match) => match[1].trim());
+const source = new URL('../src/content/event/', import.meta.url);
+const records = readdirSync(source).flatMap((group) =>
+  readdirSync(new URL(`${group}/`, source))
+    .filter((file) => file.endsWith('.json'))
+    .map((file) => JSON.parse(readFileSync(new URL(`${group}/${file}`, source), 'utf8')))
+);
+const mirrorRecords = records.filter(
+  ({ sourceUrl, sourceIdentity }) =>
+    (sourceIdentity?.provider === 'eventbrite' && sourceIdentity.id === '2004500909179') ||
+    /^https:\/\/(?:www\.)?eventbrite\.com\/e\/(?:[^/?]+-)?2004500909179\/?(?:[?#]|$)/.test(sourceUrl)
+);
+const mirrorPaths = new Set(mirrorRecords.map(({ start, slug }) => `${start.slice(0, 10)}/${slug}`));
 
 test('built feed has unique occurrence UIDs', () => {
-  const source = new URL('../src/content/event/', import.meta.url);
-  const count = readdirSync(source).reduce(
-    (total, group) => total + readdirSync(new URL(`${group}/`, source)).filter((file) => file.endsWith('.json')).length,
-    0
-  );
-  assert.equal(feedUids.length, count);
+  assert.equal(feedUids.length, records.length - mirrorRecords.length);
   assert.equal(new Set(feedUids).size, feedUids.length);
 });
 
@@ -31,11 +38,27 @@ test('November/December individual downloads match the same feed occurrence', ()
   assert.notEqual(values[0], values[1]);
 });
 
-test('every generated individual ICS uses an identity from the feed', () => {
+test('exact December mirror is absent from aggregate but keeps its detail and individual download', () => {
+  const canonical = feed.split('BEGIN:VEVENT').filter((event) => /\/events\/316189328\//.test(event));
+  assert.equal(canonical.length, 1);
+  assert.equal(uid(canonical[0]), 'e--r3jPIJ5Xg-FdHQyxJwrXUoURSY2Ib0jYHOQ6iAOU@space-coast.dev');
+  assert.doesNotMatch(feed, /2004500909179/);
+  for (const path of mirrorPaths) {
+    const mirror = read(`${path}.ics`);
+    assert.match(mirror, /2004500909179/);
+    const mirrorUid = uid(mirror);
+    assert.ok(mirrorUid);
+    assert.ok(!feedUids.includes(mirrorUid));
+    assert.match(read(`${path}/index.html`), /2004500909179/);
+  }
+});
+
+test('every other individual ICS uses an identity from the feed', () => {
   for (const entry of readdirSync(root, { withFileTypes: true })) {
     if (!entry.isDirectory()) continue;
     for (const file of readdirSync(new URL(`${entry.name}/`, root))) {
-      if (file.endsWith('.ics')) assert.ok(feedUids.includes(uid(read(`${entry.name}/${file}`))!));
+      const path = `${entry.name}/${file}`;
+      if (file.endsWith('.ics') && !mirrorPaths.has(path.slice(0, -4))) assert.ok(feedUids.includes(uid(read(path))!));
     }
   }
 });
