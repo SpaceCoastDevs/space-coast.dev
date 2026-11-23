@@ -1,4 +1,5 @@
 ---
+import { isStormCancelledEvent } from '~/utils/event-cancellation';
 import type { GetStaticPaths, InferGetStaticPropsType } from 'astro';
 import PageLayout from '~/layouts/PageLayout.astro';
 import { getAllEvents, getEventCostLabel, isFeaturedEvent } from '~/utils/events';
@@ -16,6 +17,9 @@ export const getStaticPaths = (async () => {
 type Props = InferGetStaticPropsType<typeof getStaticPaths>;
 const { event } = Astro.props as Props;
 const { data } = event;
+const isStormCancellation = isStormCancelledEvent(event);
+const cancellationMessage = 'Due to the storms we are cancelling the meetup today. Stay dry out there!';
+const cancellationGraphic = '/event-images/2026-11-18-meetup-canceled.webp';
 const start = new Date(data.start);
 const end = data.end ? new Date(data.end) : undefined;
 const descriptionParagraphs = data.description.split(/\n{2,}/);
@@ -34,11 +38,11 @@ const eventSchema = {
   '@context': 'https://schema.org',
   '@type': 'Event',
   name: data.title,
-  description: data.description,
+  description: isStormCancellation ? cancellationMessage : data.description,
   startDate: data.start,
   ...(data.end ? { endDate: data.end } : {}),
   eventAttendanceMode: `https://schema.org/${data.attendanceMode === 'online' ? 'OnlineEventAttendanceMode' : data.attendanceMode === 'mixed' ? 'MixedEventAttendanceMode' : 'OfflineEventAttendanceMode'}`,
-  eventStatus: 'https://schema.org/EventScheduled',
+  eventStatus: isStormCancellation ? 'https://schema.org/EventCancelled' : 'https://schema.org/EventScheduled',
   url: data.sourceUrl,
   organizer: { '@type': 'Organization', name: data.organizer.name, url: data.organizer.url },
   ...(data.location
@@ -60,7 +64,13 @@ const eventSchema = {
 const eventSchemaJson = JSON.stringify(eventSchema).replace(/</g, '\\u003c');
 ---
 
-<PageLayout metadata={{ title: data.title, description: data.description, canonical: data.sourceUrl }}>
+<PageLayout
+  metadata={{
+    title: data.title,
+    description: isStormCancellation ? cancellationMessage : data.description,
+    canonical: data.sourceUrl,
+  }}
+>
   <Fragment slot="head">
     <script is:inline type="application/ld+json" set:html={eventSchemaJson} />
   </Fragment>
@@ -72,6 +82,26 @@ const eventSchemaJson = JSON.stringify(eventSchema).replace(/</g, '\\u003c');
           <p class="mt-4 w-fit rounded-full bg-[#1967d2] px-3 py-1 text-sm font-bold uppercase tracking-wide text-white">
             Featured event
           </p>
+        )
+      }
+      {
+        isStormCancellation && (
+          <section
+            class="my-6 rounded-lg border border-rose-500 bg-rose-50 p-5 text-rose-950 dark:bg-rose-950 dark:text-rose-100"
+            aria-labelledby="cancellation-title"
+          >
+            <h2 class="text-2xl font-bold" id="cancellation-title">
+              November 18 meetup canceled
+            </h2>
+            <p class="mt-2 text-lg">{cancellationMessage}</p>
+            <img
+              class="mx-auto mt-4 h-auto w-full max-w-md rounded-lg"
+              src={cancellationGraphic}
+              alt=""
+              width="1080"
+              height="1080"
+            />
+          </section>
         )
       }
       <p
@@ -111,7 +141,7 @@ const eventSchemaJson = JSON.stringify(eventSchema).replace(/</g, '\\u003c');
         )
       }
       {
-        data.imageUrl && (
+        !isStormCancellation && data.imageUrl && (
           <img
             class="mt-6 h-auto max-h-[36rem] w-full rounded-lg object-contain"
             src={data.imageUrl}
@@ -143,7 +173,13 @@ const eventSchemaJson = JSON.stringify(eventSchema).replace(/</g, '\\u003c');
       </dl>
       <div class="mt-8 flex flex-wrap gap-3">
         <a class="btn-primary" href={data.sourceUrl} target="_blank" rel="noopener noreferrer">View event source</a>
-        <a class="btn-secondary" href={`/events/${eventDate}/${data.slug}.ics`}>Add to calendar</a>
+        {
+          !isStormCancellation && (
+            <a class="btn-secondary" href={`/events/${eventDate}/${data.slug}.ics`}>
+              Add to calendar
+            </a>
+          )
+        }
       </div>
     </article>
   </section>

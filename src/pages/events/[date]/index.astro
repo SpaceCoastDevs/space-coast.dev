@@ -1,4 +1,5 @@
 ---
+import { isStormCancelledEvent } from '~/utils/event-cancellation';
 import type { GetStaticPaths, InferGetStaticPropsType } from 'astro';
 import PageLayout from '~/layouts/PageLayout.astro';
 import { eventOccursOnDate, getAllEvents, getEventDates, getEventPermalink, isFeaturedEvent } from '~/utils/events';
@@ -62,6 +63,9 @@ const formatEventRange = (event: (typeof events)[number]) => {
               )}
               <h2 class="mt-2 text-xl font-semibold">
                 <a class="hover:text-primary" href={getEventPermalink(event)}>
+                  {isStormCancelledEvent(event) && (
+                    <span class="font-bold text-rose-700 dark:text-rose-300">Canceled: </span>
+                  )}
                   {event.data.title}
                 </a>
               </h2>
